@@ -9,7 +9,7 @@ export default async function InstructorDashboard() {
     supabase.from('source_workouts').select('*', { count: 'exact', head: true }),
     supabase
       .from('generated_workouts')
-      .select('id, title, duration, intensity, published, completed_at, created_at')
+      .select('*')
       .order('created_at', { ascending: false })
       .limit(10),
   ])

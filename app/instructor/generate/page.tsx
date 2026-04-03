@@ -67,13 +67,15 @@ export default function GeneratePage() {
 
     if (!res.ok) {
       setError(data.error ?? 'Er ging iets mis')
+      setLoading(false)
+    } else if (data.id) {
+      router.push(`/instructor/workout/${data.id}`)
     } else {
       setWorkout(data.content)
       setWorkoutId(data.id)
       setTitle(data.title ?? '')
+      setLoading(false)
     }
-
-    setLoading(false)
   }
 
   async function handlePublish() {
