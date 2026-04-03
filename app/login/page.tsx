@@ -96,12 +96,14 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <p className="text-center text-gray-500 text-sm mt-6">
-          Nog geen account?{' '}
-          <Link href="/register" className="text-orange-400 hover:text-orange-300">
-            Aanmelden
+        <div className="mt-6 text-center">
+          <Link
+            href="/register"
+            className="block w-full py-3 px-6 border border-gray-700 hover:border-orange-500 text-gray-300 hover:text-orange-400 font-medium rounded-xl transition-colors text-sm"
+          >
+            Nog geen account? <span className="text-orange-400 font-semibold">Aanmelden</span>
           </Link>
-        </p>
+        </div>
       </div>
     </div>
   )
