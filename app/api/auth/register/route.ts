@@ -1,3 +1,5 @@
+export const runtime = 'nodejs'
+
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { sendWelcomeEmail, sendNewUserNotification } from '@/lib/email'
@@ -16,8 +18,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 })
   }
 
-  // Stuur e-mails op de achtergrond (niet awaiten zodat registratie snel blijft)
-  Promise.all([
+  // Stuur e-mails — moet gewacht worden anders stopt Vercel de functie te vroeg
+  await Promise.all([
     sendWelcomeEmail(email).catch(console.error),
     sendNewUserNotification(email).catch(console.error),
   ])
