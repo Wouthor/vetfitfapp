@@ -26,7 +26,6 @@ export default function GeneratePage() {
   const router = useRouter()
   const supabase = createClient()
 
-  // Laad opgeslagen materialen van profiel
   useEffect(() => {
     async function loadEquipment() {
       const { data: { user } } = await supabase.auth.getUser()
@@ -41,15 +40,11 @@ export default function GeneratePage() {
     loadEquipment()
   }, [])
 
-  // Sla materialen op in profiel als ze wijzigen
   async function saveEquipment(newEquipment: string[]) {
     setEquipment(newEquipment)
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    await supabase
-      .from('profiles')
-      .update({ equipment: newEquipment })
-      .eq('id', user.id)
+    await supabase.from('profiles').update({ equipment: newEquipment }).eq('id', user.id)
   }
 
   async function handleGenerate() {
@@ -101,21 +96,20 @@ export default function GeneratePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Training genereren</h1>
-        <p className="text-gray-400 mt-1">Kies parameters en laat AI een training maken</p>
+        <h1 className="text-2xl font-bold text-white">Training genereren</h1>
+        <p className="text-[#4a5e8a] mt-1">Kies parameters en laat AI een training maken</p>
       </div>
 
-      <div className="card bg-gray-900 border-gray-800 space-y-5">
-        {/* Duur */}
+      <div className="card space-y-5">
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Duur</label>
+          <label className="block text-sm font-medium text-[#7b8db8] mb-2">Duur</label>
           <div className="grid grid-cols-3 gap-2">
             {([45, 60, 75] as Duration[]).map((d) => (
               <button
                 key={d}
                 onClick={() => setDuration(d)}
                 className={`py-3 rounded-xl font-semibold transition-colors ${
-                  duration === d ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  duration === d ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#7b8db8] hover:border-magenta-700 border border-void-border'
                 }`}
               >
                 {d} min
@@ -124,16 +118,15 @@ export default function GeneratePage() {
           </div>
         </div>
 
-        {/* Intensiteit */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-2">Intensiteit</label>
+          <label className="block text-sm font-medium text-[#7b8db8] mb-2">Intensiteit</label>
           <div className="grid grid-cols-3 gap-2">
             {(['laag', 'middel', 'hoog'] as Intensity[]).map((i) => (
               <button
                 key={i}
                 onClick={() => setIntensity(i)}
                 className={`py-3 rounded-xl font-semibold capitalize transition-colors ${
-                  intensity === i ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                  intensity === i ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#7b8db8] hover:border-magenta-700 border border-void-border'
                 }`}
               >
                 {i}
@@ -142,23 +135,21 @@ export default function GeneratePage() {
           </div>
         </div>
 
-        {/* Knieblessures */}
         <button
           onClick={() => setKneeFriendly(!kneeFriendly)}
-          className={`w-full flex items-center justify-between py-3 px-4 rounded-xl transition-colors ${
-            kneeFriendly ? 'bg-blue-900/50 border border-blue-700 text-blue-300' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+          className={`w-full flex items-center justify-between py-3 px-4 rounded-xl transition-colors border ${
+            kneeFriendly
+              ? 'bg-electric-900/50 border-electric-700 text-electric-300'
+              : 'bg-void-input border-void-border text-[#7b8db8] hover:border-magenta-700'
           }`}
         >
           <span className="font-medium">Knieblessures in de groep</span>
-          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${kneeFriendly ? 'bg-blue-500 text-white' : 'bg-gray-600'}`}>
+          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${kneeFriendly ? 'bg-electric-500 text-white' : 'bg-void-border'}`}>
             {kneeFriendly ? '✓' : ''}
           </span>
         </button>
 
-        {/* Materialen */}
         <EquipmentPicker selected={equipment} onChange={saveEquipment} />
-
-        {/* ChatFit */}
         <ChatFitInput value={chatfit} onChange={setChatfit} />
 
         <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full">
@@ -174,7 +165,7 @@ export default function GeneratePage() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Titel van de training (optioneel)"
-            className="input bg-gray-900 border-gray-700 text-white"
+            className="input"
           />
           {editing ? (
             <WorkoutEditor workout={workout} onSave={handleSaveEdit} onCancel={() => setEditing(false)} saving={saving} />

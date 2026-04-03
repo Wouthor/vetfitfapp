@@ -31,14 +31,14 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-void px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
             <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
           </div>
           <h1 className="text-3xl font-bold text-white">Wachtwoord vergeten</h1>
-          <p className="text-gray-400 mt-1">We sturen je een resetlink</p>
+          <p className="text-[#4a5e8a] mt-1">We sturen je een resetlink</p>
         </div>
 
         {sent ? (
@@ -54,14 +54,14 @@ export default function ResetPasswordPage() {
         ) : (
           <form onSubmit={handleReset} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">E-mailadres</label>
+              <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">E-mailadres</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jouw@email.nl"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
               />
             </div>
 
@@ -75,7 +75,7 @@ export default function ResetPasswordPage() {
               {loading ? 'Bezig...' : 'Resetlink versturen'}
             </button>
 
-            <Link href="/login" className="block text-center text-gray-500 hover:text-gray-300 text-sm transition-colors">
+            <Link href="/login" className="block text-center text-gray-500 hover:text-[#7b8db8] text-sm transition-colors">
               Terug naar inloggen
             </Link>
           </form>

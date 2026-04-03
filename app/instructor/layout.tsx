@@ -17,7 +17,7 @@ export default async function InstructorLayout({ children }: { children: React.R
   if (profile?.role !== 'instructor') redirect('/athlete')
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white">
+    <div className="min-h-screen bg-void text-white">
       <NavBar role="instructor" email={profile.email} />
       <main className="max-w-2xl mx-auto px-4 py-6">
         {children}

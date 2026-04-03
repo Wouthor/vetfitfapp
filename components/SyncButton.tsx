@@ -50,7 +50,7 @@ export default function SyncButton() {
         <button
           onClick={() => handleSync(true)}
           disabled={loading}
-          className="bg-gray-800 hover:bg-gray-700 text-gray-400 hover:text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors"
+          className="bg-void-input hover:bg-void-border text-[#4a5e8a] hover:text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors border border-void-border"
           title="Alles wissen en opnieuw synchroniseren"
         >
           ↺ Reset

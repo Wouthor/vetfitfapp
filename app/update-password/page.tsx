@@ -41,14 +41,14 @@ export default function UpdatePasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-void px-4">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
             <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
           </div>
           <h1 className="text-3xl font-bold text-white">Nieuw wachtwoord</h1>
-          <p className="text-gray-400 mt-1">Kies een nieuw wachtwoord</p>
+          <p className="text-[#4a5e8a] mt-1">Kies een nieuw wachtwoord</p>
         </div>
 
         {success ? (
@@ -59,26 +59,26 @@ export default function UpdatePasswordPage() {
         ) : (
           <form onSubmit={handleUpdate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Nieuw wachtwoord</label>
+              <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">Nieuw wachtwoord</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimaal 6 tekens"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-300 mb-1.5">Herhaal wachtwoord</label>
+              <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">Herhaal wachtwoord</label>
               <input
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full bg-gray-800 border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
               />
             </div>
 

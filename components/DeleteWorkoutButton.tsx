@@ -27,7 +27,7 @@ export default function DeleteWorkoutButton({ workoutId }: { workoutId: string }
         </button>
         <button
           onClick={() => setConfirm(false)}
-          className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-gray-300 font-semibold text-sm transition-colors"
+          className="flex-1 py-2.5 rounded-xl bg-void-input hover:bg-void-border text-[#7b8db8] font-semibold text-sm transition-colors border border-void-border"
         >
           Annuleren
         </button>

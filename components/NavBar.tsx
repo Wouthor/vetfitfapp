@@ -21,13 +21,13 @@ export default function NavBar({ role, email }: NavBarProps) {
   }
 
   return (
-    <header className="bg-gray-900 border-b border-gray-800 sticky top-0 z-50">
+    <header className="bg-void-card border-b border-void-border sticky top-0 z-50">
       <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
         <Link href={role === 'instructor' ? '/instructor' : '/athlete'} className="flex items-center gap-2">
           <span className="text-xl">🏋️</span>
           <span className="font-bold text-white">VetFitFapp</span>
           {role === 'instructor' && (
-            <span className="text-xs bg-orange-500 text-white px-2 py-0.5 rounded-full font-semibold">
+            <span className="text-xs bg-magenta-500 text-white px-2 py-0.5 rounded-full font-semibold">
               Instructeur
             </span>
           )}
@@ -35,13 +35,13 @@ export default function NavBar({ role, email }: NavBarProps) {
 
         <div className="flex items-center gap-3">
           {email && (
-            <span className="text-sm text-gray-400 hidden sm:block truncate max-w-32">
+            <span className="text-sm text-[#4a5e8a] hidden sm:block truncate max-w-32">
               {email}
             </span>
           )}
           <button
             onClick={handleLogout}
-            className="text-sm text-gray-400 hover:text-white transition-colors"
+            className="text-sm text-[#4a5e8a] hover:text-white transition-colors"
           >
             Uitloggen
           </button>
