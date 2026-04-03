@@ -2,11 +2,7 @@
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://vetfitfapp.vercel.app'
 
-const MESSAGE = `Hey VetFit crew! 💪
-
-Morgen (zaterdag) trainen we weer van 10:00–11:00. Wie is er bij? Laat het weten! 🏃
-
-De training staat klaar in de app: ${APP_URL}`
+const MESSAGE = `Strijders en strijdettes! Morgen gaan we weer gymmen! Wie is er bij? Lemme know. De training kun je misschien al in de app zien: ${APP_URL}`
 
 export default function WhatsAppReminderButton() {
   const url = `https://wa.me/?text=${encodeURIComponent(MESSAGE)}`

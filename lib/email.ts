@@ -42,7 +42,7 @@ export async function sendWelcomeEmail(to: string) {
         <tr>
           <td style="padding:28px 32px;">
             <p style="color:#d1d5db;font-size:16px;line-height:1.6;margin:0 0 16px;">
-              Hey! Gaaf dat je erbij bent. Je account is aangemaakt en je kunt nu inloggen om de bootcamp trainingen te bekijken.
+              Potverdorie, heb je nu gewoon een account aangemaakt in de VetFitFapp? Jazeker, heb jij dat! Je kunt nu inloggen en de trainingen bekijken en als de meester er een keertje niet is, kun je gewoon zelf een training maken. Hoe vet is dat!
             </p>
             <p style="color:#d1d5db;font-size:16px;line-height:1.6;margin:0 0 24px;">
               📅 We trainen <strong style="color:#ffffff;">elke zaterdag van 10:00–11:00</strong>. Kijk vrijdag in de app voor de training van de volgende dag.
@@ -101,7 +101,7 @@ export async function sendFridayReminder() {
   if (!INSTRUCTOR_EMAIL) return
 
   const whatsappText = encodeURIComponent(
-    `Hey VetFit crew! 💪\n\nMorgen (zaterdag) trainen we weer van 10:00–11:00. Wie is er bij? Laat het weten! 🏃\n\nDe training staat klaar in de app: ${APP_URL}`
+    `Strijders en strijdettes! Morgen gaan we weer gymmen! Wie is er bij? Lemme know. De training kun je misschien al in de app zien: ${APP_URL}`
   )
   const whatsappUrl = `https://wa.me/?text=${whatsappText}`
 
@@ -118,11 +118,7 @@ export async function sendFridayReminder() {
 
     <!-- Bericht om te kopiëren -->
     <div style="background:#1f2937;border-radius:12px;padding:16px;margin-bottom:20px;">
-      <p style="color:#d1d5db;font-size:15px;line-height:1.6;margin:0;white-space:pre-line;">Hey VetFit crew! 💪
-
-Morgen (zaterdag) trainen we weer van 10:00–11:00. Wie is er bij? Laat het weten! 🏃
-
-De training staat klaar in de app: ${APP_URL}</p>
+      <p style="color:#d1d5db;font-size:15px;line-height:1.6;margin:0;white-space:pre-line;">Strijders en strijdettes! Morgen gaan we weer gymmen! Wie is er bij? Lemme know. De training kun je misschien al in de app zien: ${APP_URL}</p>
     </div>
 
     <!-- WhatsApp knop -->
