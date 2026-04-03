@@ -55,12 +55,12 @@ export default function RegisterPage() {
             <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
           </div>
           <h1 className="text-3xl font-bold text-white">VetFitFapp</h1>
-          <p className="text-[#4a5e8a] mt-1">Maak een account aan</p>
+          <p className="text-[#ffccff] mt-1">Maak een account aan</p>
         </div>
 
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">E-mailadres</label>
+            <label className="block text-sm font-medium text-white mb-1.5">E-mailadres</label>
             <input
               type="email"
               value={email}
@@ -72,7 +72,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">Wachtwoord</label>
+            <label className="block text-sm font-medium text-white mb-1.5">Wachtwoord</label>
             <input
               type="password"
               value={password}
@@ -84,7 +84,7 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">Herhaal wachtwoord</label>
+            <label className="block text-sm font-medium text-white mb-1.5">Herhaal wachtwoord</label>
             <input
               type="password"
               value={confirm}
@@ -106,9 +106,9 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <p className="text-center text-[#4a5e8a] text-sm mt-6">
+        <p className="text-center text-[#ffccff] text-sm mt-6">
           Al een account?{' '}
-          <Link href="/login" className="text-magenta-400 hover:text-magenta-300">Inloggen</Link>
+          <Link href="/login" className="text-neon-400 hover:text-neon-300">Inloggen</Link>
         </p>
       </div>
     </div>

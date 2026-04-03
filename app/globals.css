@@ -8,30 +8,32 @@
   }
 
   body {
-    background-color: #07000f;
+    background-color: #ff00ff;
     color: #ffffff;
   }
 }
 
 @layer components {
+  /* Primaire knop: neongeel met donkere tekst — leesbaar op magenta bg */
   .btn-primary {
-    @apply bg-magenta-500 hover:bg-magenta-600 active:bg-magenta-700 text-white font-semibold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-neon-400 hover:bg-neon-300 active:bg-neon-500 text-[#1a1a00] font-bold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply bg-void-input hover:bg-void-border text-white font-semibold py-3 px-6 rounded-xl transition-colors border border-void-border;
+    @apply bg-void-card hover:bg-void-input text-white font-semibold py-3 px-6 rounded-xl transition-colors border border-void-border;
   }
 
   .btn-ghost {
-    @apply text-[#7b8db8] hover:text-white font-medium py-2 px-4 rounded-lg transition-colors;
+    @apply text-[#ff99ff] hover:text-white font-medium py-2 px-4 rounded-lg transition-colors;
   }
 
+  /* Kaarten zijn donker zodat ze afsteken tegen de magenta achtergrond */
   .card {
-    @apply bg-void-card rounded-2xl shadow-sm border border-void-subtle p-5;
+    @apply bg-void-card rounded-2xl shadow-lg border border-void-border p-5;
   }
 
   .input {
-    @apply w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500 focus:border-transparent transition;
+    @apply w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#ff66ff] focus:outline-none focus:ring-2 focus:ring-neon-400 focus:border-transparent transition;
   }
 
   .section-tag {

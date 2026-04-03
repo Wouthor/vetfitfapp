@@ -97,19 +97,19 @@ export default function GeneratePage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Training genereren</h1>
-        <p className="text-[#4a5e8a] mt-1">Kies parameters en laat AI een training maken</p>
+        <p className="text-[#ff99ff] mt-1">Kies parameters en laat AI een training maken</p>
       </div>
 
       <div className="card space-y-5">
         <div>
-          <label className="block text-sm font-medium text-[#7b8db8] mb-2">Duur</label>
+          <label className="block text-sm font-medium text-[#ffccff] mb-2">Duur</label>
           <div className="grid grid-cols-3 gap-2">
             {([45, 60, 75] as Duration[]).map((d) => (
               <button
                 key={d}
                 onClick={() => setDuration(d)}
                 className={`py-3 rounded-xl font-semibold transition-colors ${
-                  duration === d ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#7b8db8] hover:border-magenta-700 border border-void-border'
+                  duration === d ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#ffccff] hover:border-magenta-700 border border-void-border'
                 }`}
               >
                 {d} min
@@ -119,14 +119,14 @@ export default function GeneratePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#7b8db8] mb-2">Intensiteit</label>
+          <label className="block text-sm font-medium text-[#ffccff] mb-2">Intensiteit</label>
           <div className="grid grid-cols-3 gap-2">
             {(['laag', 'middel', 'hoog'] as Intensity[]).map((i) => (
               <button
                 key={i}
                 onClick={() => setIntensity(i)}
                 className={`py-3 rounded-xl font-semibold capitalize transition-colors ${
-                  intensity === i ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#7b8db8] hover:border-magenta-700 border border-void-border'
+                  intensity === i ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#ffccff] hover:border-magenta-700 border border-void-border'
                 }`}
               >
                 {i}
@@ -140,7 +140,7 @@ export default function GeneratePage() {
           className={`w-full flex items-center justify-between py-3 px-4 rounded-xl transition-colors border ${
             kneeFriendly
               ? 'bg-electric-900/50 border-electric-700 text-electric-300'
-              : 'bg-void-input border-void-border text-[#7b8db8] hover:border-magenta-700'
+              : 'bg-void-input border-void-border text-[#ffccff] hover:border-magenta-700'
           }`}
         >
           <span className="font-medium">Knieblessures in de groep</span>

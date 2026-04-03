@@ -31,19 +31,19 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-void px-4">
+    <div className="min-h-screen flex items-center justify-center bg-void px-4 py-8">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
             <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
           </div>
           <h1 className="text-3xl font-bold text-white">VetFitFapp</h1>
-          <p className="text-[#4a5e8a] mt-1">Log in om verder te gaan</p>
+          <p className="text-[#ffccff] mt-1">Log in om verder te gaan</p>
         </div>
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">E-mailadres</label>
+            <label className="block text-sm font-medium text-white mb-1.5">E-mailadres</label>
             <input
               type="email"
               value={email}
@@ -55,7 +55,7 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">Wachtwoord</label>
+            <label className="block text-sm font-medium text-white mb-1.5">Wachtwoord</label>
             <input
               type="password"
               value={password}
@@ -80,11 +80,11 @@ export default function LoginPage() {
         <div className="mt-6 space-y-3 text-center">
           <Link
             href="/register"
-            className="block w-full py-3 px-6 border border-void-border hover:border-magenta-500 text-[#7b8db8] hover:text-magenta-400 font-medium rounded-xl transition-colors text-sm"
+            className="block w-full py-3 px-6 border border-void-border hover:border-neon-400 text-[#ffccff] hover:text-neon-400 font-medium rounded-xl transition-colors text-sm bg-void-card"
           >
-            Nog geen account? <span className="text-magenta-400 font-semibold">Aanmelden</span>
+            Nog geen account? <span className="text-neon-400 font-semibold">Aanmelden</span>
           </Link>
-          <Link href="/reset-password" className="block text-sm text-[#4a5e8a] hover:text-[#7b8db8] transition-colors">
+          <Link href="/reset-password" className="block text-sm text-[#ffccff] hover:text-white transition-colors">
             Wachtwoord vergeten?
           </Link>
         </div>

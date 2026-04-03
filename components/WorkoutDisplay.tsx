@@ -124,7 +124,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
         >
           <div className="flex items-center justify-between px-4 py-3 border-b border-void-subtle">
             <span className="text-sm font-bold text-white">📋 Overzicht</span>
-            <span className="text-xs text-[#4a5e8a]">{total} oefeningen</span>
+            <span className="text-xs text-[#ff99ff]">{total} oefeningen</span>
           </div>
 
           <div className="p-4 space-y-4">
@@ -141,7 +141,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
                     <span className={`text-xs font-bold uppercase tracking-wide ${cfg.accent}`}>
                       {cfg.emoji} {cfg.label}
                     </span>
-                    <span className="text-xs text-[#4a5e8a]">{section.duur}</span>
+                    <span className="text-xs text-[#ff99ff]">{section.duur}</span>
                   </div>
                   <div className="space-y-1.5">
                     {section.oefeningen.map((ex, i) => (
@@ -152,7 +152,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
                           </span>
                           <span className="text-sm text-white truncate">{ex.naam}</span>
                         </div>
-                        <span className="text-xs text-[#4a5e8a] flex-shrink-0">{ex.duur_of_sets}</span>
+                        <span className="text-xs text-[#ff99ff] flex-shrink-0">{ex.duur_of_sets}</span>
                       </div>
                     ))}
                   </div>
@@ -191,7 +191,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
       <div className="flex gap-2">
         <button
           onClick={() => goTo(-1)}
-          className="py-2 px-3 rounded-xl text-xs font-semibold transition-all border bg-void-card border-void-border text-[#4a5e8a]"
+          className="py-2 px-3 rounded-xl text-xs font-semibold transition-all border bg-void-card border-void-border text-[#ff99ff]"
         >
           📋
         </button>
@@ -205,7 +205,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
               className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold transition-all border ${
                 active
                   ? `${cfg.bg} ${cfg.border} ${cfg.accent}`
-                  : 'bg-void-card border-void-border text-[#4a5e8a]'
+                  : 'bg-void-card border-void-border text-[#ff99ff]'
               }`}
             >
               {cfg.emoji} {cfg.label}
@@ -224,11 +224,11 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
             <span className={`text-xs font-semibold uppercase tracking-wide ${config.accent}`}>
               {config.emoji} {config.label}
             </span>
-            <span className="text-xs text-[#4a5e8a]">
+            <span className="text-xs text-[#ff99ff]">
               {slide.indexInSection + 1}/{slide.totalInSection}
             </span>
           </div>
-          <span className="text-xs text-[#4a5e8a]">
+          <span className="text-xs text-[#ff99ff]">
             {current + 1} / {total}
           </span>
         </div>
@@ -244,14 +244,14 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           {bullets.length > 1 ? (
             <ul className="space-y-2">
               {bullets.map((bullet, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-[#7b8db8]">
+                <li key={i} className="flex items-start gap-2 text-sm text-[#ffccff]">
                   <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${config.dot}`} />
                   <span>{bullet}</span>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-sm text-[#7b8db8] leading-relaxed">{slide.exercise.beschrijving}</p>
+            <p className="text-sm text-[#ffccff] leading-relaxed">{slide.exercise.beschrijving}</p>
           )}
 
           {showKneeAlternatives && slide.exercise.knie_vriendelijk_alternatief && (

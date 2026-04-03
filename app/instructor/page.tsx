@@ -19,17 +19,17 @@ export default async function InstructorDashboard() {
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-white">Dashboard</h1>
-        <p className="text-[#4a5e8a] mt-1">Beheer je bootcamp trainingen</p>
+        <p className="text-[#ff99ff] mt-1">Beheer je bootcamp trainingen</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
         <div className="card">
           <p className="text-3xl font-bold text-magenta-400">{sourceCount ?? 0}</p>
-          <p className="text-sm text-[#4a5e8a] mt-1">Trainingen in Drive</p>
+          <p className="text-sm text-[#ff99ff] mt-1">Trainingen in Drive</p>
         </div>
         <div className="card">
           <p className="text-3xl font-bold text-neon-400">{recentWorkouts?.length ?? 0}</p>
-          <p className="text-sm text-[#4a5e8a] mt-1">Gegenereerd</p>
+          <p className="text-sm text-[#ff99ff] mt-1">Gegenereerd</p>
         </div>
       </div>
 
@@ -54,7 +54,7 @@ export default async function InstructorDashboard() {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="font-medium text-white">{w.title ?? 'Training zonder titel'}</p>
-                    <p className="text-sm text-[#4a5e8a] mt-0.5">
+                    <p className="text-sm text-[#ff99ff] mt-0.5">
                       {w.duration} min · {w.intensity}
                     </p>
                     {w.completed_at && (
@@ -66,7 +66,7 @@ export default async function InstructorDashboard() {
                   <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
                     w.published
                       ? 'bg-electric-900 text-electric-400'
-                      : 'bg-void-input text-[#4a5e8a]'
+                      : 'bg-void-input text-[#ff99ff]'
                   }`}>
                     {w.published ? 'Gepubliceerd' : 'Concept'}
                   </span>
