@@ -1,15 +1,23 @@
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import nodemailer from 'nodemailer'
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL ?? 'https://vetfitfapp.vercel.app'
-const FROM = 'VetFitFapp <noreply@vetfitfapp.nl>'
 const INSTRUCTOR_EMAIL = process.env.INSTRUCTOR_EMAIL ?? ''
+
+function createTransporter() {
+  return nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_APP_PASSWORD,
+    },
+  })
+}
 
 // ── Welkomstmail voor nieuwe atleet ──────────────────────────────
 export async function sendWelcomeEmail(to: string) {
-  await resend.emails.send({
-    from: FROM,
+  const transporter = createTransporter()
+  await transporter.sendMail({
+    from: `"VetFitFapp" <${process.env.EMAIL_USER}>`,
     to,
     subject: '💪 Welkom bij VetFitFapp!',
     html: `
@@ -25,7 +33,7 @@ export async function sendWelcomeEmail(to: string) {
         <tr>
           <td align="center" style="padding:32px 32px 24px;background:#111827;border-bottom:1px solid #1f2937;">
             <img src="${APP_URL}/icon.png" width="72" height="72"
-              style="border-radius:16px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" />
+              style="border-radius:16px;margin-bottom:16px;display:block;margin-left:auto;margin-right:auto;" alt="VetFitFapp" />
             <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">Welkom bij VetFitFapp! 🎉</h1>
           </td>
         </tr>
@@ -71,8 +79,9 @@ export async function sendWelcomeEmail(to: string) {
 // ── Melding aan instructor bij nieuwe aanmelding ──────────────────
 export async function sendNewUserNotification(newUserEmail: string) {
   if (!INSTRUCTOR_EMAIL) return
-  await resend.emails.send({
-    from: FROM,
+  const transporter = createTransporter()
+  await transporter.sendMail({
+    from: `"VetFitFapp" <${process.env.EMAIL_USER}>`,
     to: INSTRUCTOR_EMAIL,
     subject: '🆕 Nieuwe atleet aangemeld',
     html: `
@@ -96,8 +105,9 @@ export async function sendFridayReminder() {
   )
   const whatsappUrl = `https://wa.me/?text=${whatsappText}`
 
-  await resend.emails.send({
-    from: FROM,
+  const transporter = createTransporter()
+  await transporter.sendMail({
+    from: `"VetFitFapp" <${process.env.EMAIL_USER}>`,
     to: INSTRUCTOR_EMAIL,
     subject: '📲 Vrijdagreminder – stuur de WhatsApp naar de groep',
     html: `
