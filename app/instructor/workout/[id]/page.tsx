@@ -5,6 +5,7 @@ import PDFExportButton from '@/components/PDFExportButton'
 import type { GeneratedWorkout } from '@/lib/types'
 import PublishButton from '@/components/PublishButton'
 import CompleteButton from '@/components/CompleteButton'
+import DeleteWorkoutButton from '@/components/DeleteWorkoutButton'
 
 export default async function WorkoutDetailPage({ params }: { params: { id: string } }) {
   const supabase = await createClient()
@@ -43,6 +44,7 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
         {!w.published && <PublishButton workoutId={w.id} />}
       </div>
       <CompleteButton workoutId={w.id} completedAt={w.completed_at ?? null} />
+      <DeleteWorkoutButton workoutId={w.id} />
     </div>
   )
 }
