@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-import type { WorkoutContent, WorkoutSection, Exercise } from '@/lib/types'
+import type { WorkoutContent, Exercise } from '@/lib/types'
 
 interface WorkoutDisplayProps {
   workout: WorkoutContent
@@ -56,12 +56,12 @@ function formatDescription(text: string): string[] {
   return lines
 }
 
+// -1 = overzicht, 0..n-1 = oefening slides
 export default function WorkoutDisplay({ workout, showKneeAlternatives }: WorkoutDisplayProps) {
-  const [current, setCurrent] = useState(0)
+  const [current, setCurrent] = useState(-1)
   const touchStartX = useRef<number | null>(null)
   const touchStartY = useRef<number | null>(null)
 
-  // Flatten all exercises into slides
   const slides: Slide[] = [
     ...(workout.warming_up?.oefeningen ?? []).map((ex, i, arr) => ({
       exercise: ex,
@@ -84,17 +84,12 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
   ]
 
   const total = slides.length
-  const slide = slides[current]
-  const config = sectionConfig[slide.sectionKey]
-  const bullets = formatDescription(slide.exercise.beschrijving)
-
-  // Section progress: how many exercises per section
   const wuCount = workout.warming_up?.oefeningen?.length ?? 0
   const hdCount = workout.hoofddeel?.oefeningen?.length ?? 0
   const cdCount = workout.cooling_down?.oefeningen?.length ?? 0
 
   function goTo(index: number) {
-    if (index >= 0 && index < total) setCurrent(index)
+    if (index >= -1 && index < total) setCurrent(index)
   }
 
   function handleTouchStart(e: React.TouchEvent) {
@@ -106,7 +101,6 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
     if (touchStartX.current === null || touchStartY.current === null) return
     const dx = e.changedTouches[0].clientX - touchStartX.current
     const dy = e.changedTouches[0].clientY - touchStartY.current
-    // Only swipe if horizontal movement is dominant
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
       if (dx < 0) goTo(current + 1)
       else goTo(current - 1)
@@ -115,16 +109,99 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
     touchStartY.current = null
   }
 
-  // Section tab positions
   const sectionTabs: { key: SectionKey; start: number; count: number }[] = []
   if (wuCount > 0) sectionTabs.push({ key: 'warming_up', start: 0, count: wuCount })
   if (hdCount > 0) sectionTabs.push({ key: 'hoofddeel', start: wuCount, count: hdCount })
   if (cdCount > 0) sectionTabs.push({ key: 'cooling_down', start: wuCount + hdCount, count: cdCount })
 
+  // ── OVERZICHT SLIDE ──────────────────────────────────────────────
+  if (current === -1) {
+    return (
+      <div className="space-y-3">
+        <div
+          className="rounded-2xl border bg-gray-900/80 border-gray-700 select-none"
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800">
+            <span className="text-sm font-bold text-white">📋 Overzicht</span>
+            <span className="text-xs text-gray-500">{total} oefeningen</span>
+          </div>
+
+          {/* Sections summary */}
+          <div className="p-4 space-y-4">
+            {([
+              { key: 'warming_up' as SectionKey, section: workout.warming_up },
+              { key: 'hoofddeel' as SectionKey, section: workout.hoofddeel },
+              { key: 'cooling_down' as SectionKey, section: workout.cooling_down },
+            ]).map(({ key, section }) => {
+              if (!section?.oefeningen?.length) return null
+              const cfg = sectionConfig[key]
+              return (
+                <div key={key}>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`text-xs font-bold uppercase tracking-wide ${cfg.accent}`}>
+                      {cfg.emoji} {cfg.label}
+                    </span>
+                    <span className="text-xs text-gray-500">{section.duur}</span>
+                  </div>
+                  <div className="space-y-1.5">
+                    {section.oefeningen.map((ex, i) => (
+                      <div key={i} className="flex items-center justify-between gap-3 bg-gray-800/50 rounded-lg px-3 py-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <span className={`w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 ${cfg.tag}`}>
+                            {i + 1}
+                          </span>
+                          <span className="text-sm text-white truncate">{ex.naam}</span>
+                        </div>
+                        <span className="text-xs text-gray-400 flex-shrink-0">{ex.duur_of_sets}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+
+          {/* Start knop */}
+          <div className="px-4 pb-4">
+            <button
+              onClick={() => goTo(0)}
+              className="w-full py-3 rounded-xl bg-orange-500 hover:bg-orange-400 text-white font-bold text-sm transition-colors"
+            >
+              Start training →
+            </button>
+          </div>
+        </div>
+
+        {/* Dot: overzicht actief */}
+        <div className="flex gap-1 flex-wrap justify-center px-2">
+          <button className="rounded-full w-4 h-2 bg-gray-400" />
+          {slides.map((s, i) => {
+            const cfg = sectionConfig[s.sectionKey]
+            return <button key={i} onClick={() => goTo(i)} className={`rounded-full w-2 h-2 bg-gray-700`} />
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  // ── OEFENING SLIDE ───────────────────────────────────────────────
+  const slide = slides[current]
+  const config = sectionConfig[slide.sectionKey]
+  const bullets = formatDescription(slide.exercise.beschrijving)
+
   return (
     <div className="space-y-3">
       {/* Section tabs */}
       <div className="flex gap-2">
+        <button
+          onClick={() => goTo(-1)}
+          className="py-2 px-3 rounded-xl text-xs font-semibold transition-all border bg-gray-900 border-gray-800 text-gray-500"
+        >
+          📋
+        </button>
         {sectionTabs.map(({ key, start, count }) => {
           const cfg = sectionConfig[key]
           const active = current >= start && current < start + count
@@ -202,8 +279,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
         <div className="flex items-center justify-between px-4 pb-4 gap-3">
           <button
             onClick={() => goTo(current - 1)}
-            disabled={current === 0}
-            className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors"
+            className="flex-1 py-2.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-white font-semibold text-sm transition-colors"
           >
             ← Vorige
           </button>
@@ -217,8 +293,10 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
         </div>
       </div>
 
-      {/* Dot progress bar */}
+      {/* Dot progress */}
       <div className="flex gap-1 flex-wrap justify-center px-2">
+        {/* Overzicht dot */}
+        <button onClick={() => goTo(-1)} className="rounded-full w-2 h-2 bg-gray-600" />
         {slides.map((s, i) => {
           const cfg = sectionConfig[s.sectionKey]
           return (
