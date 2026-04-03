@@ -30,12 +30,19 @@ export default function RegisterPage() {
 
     setLoading(true)
 
-    const { error } = await supabase.auth.signUp({ email, password })
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    })
+    const data = await res.json()
 
-    if (error) {
-      setError(error.message)
+    if (!res.ok) {
+      setError(data.error ?? 'Er ging iets mis')
       setLoading(false)
     } else {
+      // Log daarna in
+      await supabase.auth.signInWithPassword({ email, password })
       router.push('/')
       router.refresh()
     }

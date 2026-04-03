@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import SyncButton from '@/components/SyncButton'
+import WhatsAppReminderButton from '@/components/WhatsAppReminderButton'
 
 export default async function InstructorDashboard() {
   const supabase = await createClient()
@@ -39,6 +40,7 @@ export default async function InstructorDashboard() {
         <Link href="/instructor/generate" className="btn-primary w-full text-center block">
           Nieuwe training genereren
         </Link>
+        <WhatsAppReminderButton />
         <SyncButton />
       </div>
 
