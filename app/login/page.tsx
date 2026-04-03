@@ -96,12 +96,18 @@ export default function LoginPage() {
           </button>
         </form>
 
-        <div className="mt-6 text-center">
+        <div className="mt-6 space-y-3 text-center">
           <Link
             href="/register"
             className="block w-full py-3 px-6 border border-gray-700 hover:border-orange-500 text-gray-300 hover:text-orange-400 font-medium rounded-xl transition-colors text-sm"
           >
             Nog geen account? <span className="text-orange-400 font-semibold">Aanmelden</span>
+          </Link>
+          <Link
+            href="/reset-password"
+            className="block text-sm text-gray-500 hover:text-gray-300 transition-colors"
+          >
+            Wachtwoord vergeten?
           </Link>
         </div>
       </div>
