@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import Image from 'next/image'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -33,8 +35,8 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo / titel */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-500 rounded-2xl mb-4">
-            <span className="text-3xl">🏋️</span>
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
+            <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
           </div>
           <h1 className="text-3xl font-bold text-white">VetFitFapp</h1>
           <p className="text-gray-400 mt-1">Log in om verder te gaan</p>
@@ -93,6 +95,13 @@ export default function LoginPage() {
             {loading ? 'Bezig met inloggen...' : 'Inloggen'}
           </button>
         </form>
+
+        <p className="text-center text-gray-500 text-sm mt-6">
+          Nog geen account?{' '}
+          <Link href="/register" className="text-orange-400 hover:text-orange-300">
+            Aanmelden
+          </Link>
+        </p>
       </div>
     </div>
   )
