@@ -12,6 +12,7 @@ interface WorkoutDisplayProps {
 const sectionConfig = {
   warming_up: {
     label: 'Warming-up',
+    short: 'Warm',
     bg: 'bg-neon-950/80',
     border: 'border-neon-400/40',
     tag: 'bg-neon-900 text-neon-400',
@@ -21,6 +22,7 @@ const sectionConfig = {
   },
   hoofddeel: {
     label: 'Hoofddeel',
+    short: 'Main',
     bg: 'bg-magenta-950/80',
     border: 'border-magenta-500/40',
     tag: 'bg-magenta-900 text-magenta-400',
@@ -30,6 +32,7 @@ const sectionConfig = {
   },
   cooling_down: {
     label: 'Cooling-down',
+    short: 'Cool',
     bg: 'bg-electric-950/80',
     border: 'border-electric-400/40',
     tag: 'bg-electric-900 text-electric-400',
@@ -114,6 +117,29 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
   if (hdCount > 0) sectionTabs.push({ key: 'hoofddeel', start: wuCount, count: hdCount })
   if (cdCount > 0) sectionTabs.push({ key: 'cooling_down', start: wuCount + hdCount, count: cdCount })
 
+  // ── VOORTGANGSBALK ────────────────────────────────────────────────
+  function ProgressBar() {
+    const progress = current === -1 ? 0 : ((current + 1) / total) * 100
+    // Kleur op basis van huidige sectie
+    const color = current === -1
+      ? 'bg-void-border'
+      : sectionConfig[slides[current].sectionKey].dot
+
+    return (
+      <div className="flex items-center gap-2 px-1">
+        <div className="flex-1 h-1.5 bg-void-input rounded-full overflow-hidden">
+          <div
+            className={`h-full rounded-full transition-all duration-300 ${color}`}
+            style={{ width: `${progress}%` }}
+          />
+        </div>
+        <span className="text-xs text-[#ff99ff] tabular-nums shrink-0">
+          {current === -1 ? '0' : current + 1}/{total}
+        </span>
+      </div>
+    )
+  }
+
   // ── OVERZICHT SLIDE ──────────────────────────────────────────────
   if (current === -1) {
     return (
@@ -146,14 +172,12 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
                   </div>
                   <div className="space-y-1.5">
                     {section.oefeningen.map((ex, i) => (
-                      <div key={i} className="flex items-center justify-between gap-3 bg-void-input rounded-lg px-3 py-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <span className={`w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 ${cfg.tag}`}>
-                            {i + 1}
-                          </span>
-                          <span className="text-sm text-white truncate">{ex.naam}</span>
-                        </div>
-                        <span className="text-xs text-[#ff99ff] flex-shrink-0">{ex.duur_of_sets}</span>
+                      <div key={i} className="flex items-center gap-3 bg-void-input rounded-lg px-3 py-2">
+                        <span className={`w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 ${cfg.tag}`}>
+                          {i + 1}
+                        </span>
+                        <span className="text-sm text-white flex-1 min-w-0 truncate">{ex.naam}</span>
+                        <span className="text-xs text-[#ff99ff] shrink-0 max-w-[40%] text-right truncate">{ex.duur_of_sets}</span>
                       </div>
                     ))}
                   </div>
@@ -172,12 +196,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           </div>
         </div>
 
-        <div className="flex gap-1 flex-wrap justify-center px-2">
-          <button className="rounded-full w-4 h-2 bg-[#7b8db8]" />
-          {slides.map((_, i) => (
-            <button key={i} onClick={() => goTo(i)} className="rounded-full w-2 h-2 bg-void-border" />
-          ))}
-        </div>
+        <ProgressBar />
       </div>
     )
   }
@@ -189,10 +208,11 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
 
   return (
     <div className="space-y-3">
-      <div className="flex gap-2">
+      {/* Sectietabs — emoji + verkorte naam op mobiel */}
+      <div className="flex gap-1.5">
         <button
           onClick={() => goTo(-1)}
-          className="py-2 px-3 rounded-xl text-xs font-semibold transition-all border bg-void-card border-void-border text-[#ff99ff]"
+          className="py-2 px-3 rounded-xl text-xs font-semibold transition-all border bg-void-card border-void-border text-[#ff99ff] shrink-0"
         >
           📋
         </button>
@@ -203,13 +223,14 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
             <button
               key={key}
               onClick={() => goTo(start)}
-              className={`flex-1 py-2 px-2 rounded-xl text-xs font-semibold transition-all border ${
+              className={`flex-1 py-2 px-1 rounded-xl text-xs font-semibold transition-all border ${
                 active
                   ? `${cfg.bg} ${cfg.border} ${cfg.accent}`
                   : 'bg-void-card border-void-border text-[#ff99ff]'
               }`}
             >
-              {cfg.emoji} {cfg.label}
+              <span className="hidden sm:inline">{cfg.emoji} {cfg.label}</span>
+              <span className="sm:hidden">{cfg.emoji} {cfg.short}</span>
             </button>
           )
         })}
@@ -220,10 +241,11 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
       >
+        {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-void-subtle">
           <div className="flex items-center gap-2">
             <span className={`text-xs font-semibold uppercase tracking-wide ${config.accent}`}>
-              {config.emoji} {config.label}
+              {config.emoji} <span className="hidden sm:inline">{config.label}</span><span className="sm:hidden">{config.short}</span>
             </span>
             <span className="text-xs text-[#ff99ff]">
               {slide.indexInSection + 1}/{slide.totalInSection}
@@ -234,10 +256,13 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           </span>
         </div>
 
-        <div className="px-5 py-5 min-h-56">
-          <div className="flex items-start justify-between gap-3 mb-4">
-            <h3 className="text-xl font-bold text-white leading-tight">{slide.exercise.naam}</h3>
-            <span className={`text-sm font-bold px-3 py-1.5 rounded-xl flex-shrink-0 ${config.tag}`}>
+        <div className="px-5 py-5">
+          {/* Naam + duur_of_sets: naam bovenaan, badge eronder — voorkomt overflow */}
+          <div className="mb-4">
+            <h3 className="text-xl font-bold text-white leading-tight mb-2">
+              {slide.exercise.naam}
+            </h3>
+            <span className={`inline-block text-sm font-bold px-3 py-1.5 rounded-xl break-words ${config.tag}`}>
               {slide.exercise.duur_of_sets}
             </span>
           </div>
@@ -276,40 +301,27 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           )}
         </div>
 
+        {/* Navigatieknoppen */}
         <div className="flex items-center justify-between px-4 pb-4 gap-3">
           <button
             onClick={() => goTo(current - 1)}
-            className="flex-1 py-2.5 rounded-xl bg-void-input hover:bg-void-border text-white font-semibold text-sm transition-colors"
+            disabled={current === 0}
+            className="flex-1 py-3 rounded-xl bg-void-input hover:bg-void-border disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors"
           >
             ← Vorige
           </button>
           <button
             onClick={() => goTo(current + 1)}
             disabled={current === total - 1}
-            className="flex-1 py-2.5 rounded-xl bg-void-input hover:bg-void-border disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors"
+            className="flex-1 py-3 rounded-xl bg-void-input hover:bg-void-border disabled:opacity-30 disabled:cursor-not-allowed text-white font-semibold text-sm transition-colors"
           >
             Volgende →
           </button>
         </div>
       </div>
 
-      <div className="flex gap-1 flex-wrap justify-center px-2">
-        <button onClick={() => goTo(-1)} className="rounded-full w-2 h-2 bg-[#4a5e8a]" />
-        {slides.map((s, i) => {
-          const cfg = sectionConfig[s.sectionKey]
-          return (
-            <button
-              key={i}
-              onClick={() => goTo(i)}
-              className={`rounded-full transition-all ${
-                i === current
-                  ? `w-4 h-2 ${cfg.dot}`
-                  : `w-2 h-2 ${i < current ? cfg.dot + ' opacity-60' : 'bg-void-border'}`
-              }`}
-            />
-          )
-        })}
-      </div>
+      {/* Voortgangsbalk — vervangt de overlopende dots */}
+      <ProgressBar />
     </div>
   )
 }
