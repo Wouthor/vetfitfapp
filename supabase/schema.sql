@@ -35,6 +35,15 @@ CREATE TABLE IF NOT EXISTS generated_workouts (
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
+-- Training aanmeldingen (atleten die meedoen)
+CREATE TABLE IF NOT EXISTS training_signups (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  workout_id UUID REFERENCES generated_workouts ON DELETE CASCADE NOT NULL,
+  user_id UUID REFERENCES auth.users ON DELETE CASCADE NOT NULL,
+  signed_up_at TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(workout_id, user_id)
+);
+
 -- ============================================================
 -- ROW LEVEL SECURITY (RLS)
 -- ============================================================
@@ -42,11 +51,13 @@ CREATE TABLE IF NOT EXISTS generated_workouts (
 ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE source_workouts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE generated_workouts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE training_signups ENABLE ROW LEVEL SECURITY;
 
--- Profiles: alleen eigen profiel zien
-CREATE POLICY "Users can view own profile"
+-- Profiles: alle ingelogde gebruikers mogen profielen lezen (namen voor deelnemerslijst)
+CREATE POLICY "Authenticated users can read all profiles"
   ON profiles FOR SELECT
-  USING (auth.uid() = id);
+  TO authenticated
+  USING (true);
 
 CREATE POLICY "Users can update own profile"
   ON profiles FOR UPDATE
@@ -78,6 +89,17 @@ CREATE POLICY "Athletes can insert their own workouts"
     auth.uid() = created_by
     AND EXISTS (SELECT 1 FROM profiles WHERE id = auth.uid() AND role = 'athlete')
   );
+
+-- Training signups RLS
+CREATE POLICY "Authenticated users can read signups"
+  ON training_signups FOR SELECT
+  TO authenticated
+  USING (true);
+
+CREATE POLICY "Athletes can manage own signups"
+  ON training_signups FOR ALL
+  USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
 
 -- ============================================================
 -- AUTO-CREATED PROFILE ON SIGNUP

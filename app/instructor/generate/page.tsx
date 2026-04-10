@@ -104,7 +104,7 @@ export default function GeneratePage() {
         <div>
           <label className="block text-sm font-medium text-[#ffccff] mb-2">Duur</label>
           <div className="grid grid-cols-3 gap-2">
-            {([45, 60, 75] as Duration[]).map((d) => (
+            {([30, 45, 60] as Duration[]).map((d) => (
               <button
                 key={d}
                 onClick={() => setDuration(d)}

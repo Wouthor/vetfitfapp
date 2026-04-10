@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import type { WorkoutContent, Exercise } from '@/lib/types'
+import ExerciseTimer from '@/components/ExerciseTimer'
 
 interface WorkoutDisplayProps {
   workout: WorkoutContent
@@ -261,6 +262,16 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
                 <span className="text-xs font-semibold text-electric-400 uppercase tracking-wide">Knie-alternatief </span>
                 <span className="text-xs text-electric-300">{slide.exercise.knie_vriendelijk_alternatief}</span>
               </div>
+            </div>
+          )}
+
+          {slide.exercise.timer && (
+            <div className="mt-4">
+              <ExerciseTimer
+                key={`${current}-timer`}
+                timer={slide.exercise.timer}
+                onComplete={() => goTo(current + 1)}
+              />
             </div>
           )}
         </div>

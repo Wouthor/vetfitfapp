@@ -2,7 +2,7 @@
 
 const nextConfig = {
   experimental: {
-    serverComponentsExternalPackages: ['mammoth', 'googleapis', 'google-auth-library', '@react-pdf/renderer'],
+    serverComponentsExternalPackages: ['mammoth', 'googleapis', 'google-auth-library', '@react-pdf/renderer', '@anthropic-ai/sdk'],
   },
 }
 

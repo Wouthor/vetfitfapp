@@ -1,137 +1,135 @@
-'use client'
+import { createClient } from '@/lib/supabase/server'
+import Link from 'next/link'
 
-import { useState, useEffect } from 'react'
-import type { Duration, Intensity, WorkoutContent } from '@/lib/types'
-import WorkoutDisplay from '@/components/WorkoutDisplay'
-import PDFExportButton from '@/components/PDFExportButton'
-import EquipmentPicker from '@/components/EquipmentPicker'
-import ChatFitInput from '@/components/ChatFitInput'
-import { createClient } from '@/lib/supabase/client'
+export default async function AthletePage() {
+  const supabase = await createClient()
 
-export default function AthletePage() {
-  const [duration, setDuration] = useState<Duration>(60)
-  const [intensity, setIntensity] = useState<Intensity>('middel')
-  const [kneeFriendly, setKneeFriendly] = useState(false)
-  const [equipment, setEquipment] = useState<string[]>([])
-  const [chatfit, setChatfit] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const [workout, setWorkout] = useState<WorkoutContent | null>(null)
-  const [title, setTitle] = useState('')
-  const supabase = createClient()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // Laad de standaard materialen van de instructeur
-  useEffect(() => {
-    async function loadInstructorEquipment() {
-      const { data } = await supabase
-        .from('profiles')
-        .select('equipment')
-        .eq('role', 'instructor')
-        .limit(1)
-        .single()
-      if (data?.equipment?.length) setEquipment(data.equipment)
-    }
-    loadInstructorEquipment()
-  }, [])
+  const [{ data: workouts }, { data: mySignups }] = await Promise.all([
+    supabase
+      .from('generated_workouts')
+      .select('id, title, duration, intensity, knee_friendly, completed_at, created_at')
+      .eq('published', true)
+      .order('created_at', { ascending: false }),
+    supabase
+      .from('training_signups')
+      .select('workout_id')
+      .eq('user_id', user?.id ?? ''),
+  ])
 
-  async function handleGenerate() {
-    setLoading(true)
-    setError('')
-    setWorkout(null)
+  // Haal aanmeldingstelling op per training
+  const workoutIds = workouts?.map((w) => w.id) ?? []
+  const { data: signupCounts } = workoutIds.length > 0
+    ? await supabase
+        .from('training_signups')
+        .select('workout_id')
+        .in('workout_id', workoutIds)
+    : { data: [] }
 
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ duration, intensity, kneeFriendly, equipment, chatfit }),
-    })
-
-    const data = await res.json()
-
-    if (!res.ok) {
-      setError(data.error ?? 'Er ging iets mis')
-    } else {
-      setWorkout(data.content)
-      setTitle(data.title ?? `Training ${duration} min`)
-    }
-
-    setLoading(false)
+  const signedUpIds = new Set(mySignups?.map((s) => s.workout_id) ?? [])
+  const countByWorkout: Record<string, number> = {}
+  for (const s of signupCounts ?? []) {
+    countByWorkout[s.workout_id] = (countByWorkout[s.workout_id] ?? 0) + 1
   }
+
+  const done = workouts?.filter((w) => w.completed_at) ?? []
+  const upcoming = workouts?.filter((w) => !w.completed_at) ?? []
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Training genereren</h1>
-        <p className="text-gray-400 mt-1">Kies je parameters en start de training</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-white">Trainingen</h1>
+          <p className="text-[#ff99ff] mt-1">Gepubliceerde trainingen van de instructor</p>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/athlete/profile" className="btn-ghost text-sm px-3 py-2">
+            Mijn profiel
+          </Link>
+          <Link href="/athlete/generate" className="btn-primary text-sm px-4 py-2">
+            Maak zelf een training
+          </Link>
+        </div>
       </div>
 
-      {!workout && (
-        <div className="card bg-gray-900 border-gray-800 space-y-5">
-          {/* Duur */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Hoe lang?</label>
-            <div className="grid grid-cols-3 gap-2">
-              {([45, 60, 75] as Duration[]).map((d) => (
-                <button key={d} onClick={() => setDuration(d)}
-                  className={`py-4 rounded-xl font-bold text-lg transition-colors ${duration === d ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
-                  {d}'
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Intensiteit */}
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">Intensiteit</label>
-            <div className="grid grid-cols-3 gap-2">
-              {([{ value: 'laag', emoji: '😌' }, { value: 'middel', emoji: '💪' }, { value: 'hoog', emoji: '🔥' }] as { value: Intensity; emoji: string }[]).map(({ value, emoji }) => (
-                <button key={value} onClick={() => setIntensity(value)}
-                  className={`py-4 rounded-xl font-semibold capitalize transition-colors ${intensity === value ? 'bg-orange-500 text-white' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
-                  <span className="text-xl block mb-1">{emoji}</span>
-                  {value}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Knieblessures */}
-          <button onClick={() => setKneeFriendly(!kneeFriendly)}
-            className={`w-full flex items-center gap-3 py-4 px-4 rounded-xl transition-colors ${kneeFriendly ? 'bg-blue-900/50 border border-blue-700 text-blue-300' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
-            <span className="text-2xl">🦵</span>
-            <div className="text-left">
-              <p className="font-semibold">Knieblessures</p>
-              <p className="text-xs opacity-70">Oefeningen worden aangepast</p>
-            </div>
-            <div className={`ml-auto w-6 h-6 rounded-full flex items-center justify-center text-sm flex-shrink-0 ${kneeFriendly ? 'bg-blue-500 text-white' : 'bg-gray-600'}`}>
-              {kneeFriendly ? '✓' : ''}
-            </div>
-          </button>
-
-          {/* Materialen */}
-          <EquipmentPicker selected={equipment} onChange={setEquipment} />
-
-          {/* ChatFit */}
-          <ChatFitInput value={chatfit} onChange={setChatfit} />
-
-          <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full text-lg py-4">
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="animate-spin inline-block">⟳</span> Training wordt gemaakt...
-              </span>
-            ) : 'Training starten 🏋️'}
-          </button>
+      {upcoming.length === 0 && done.length === 0 && (
+        <div className="card text-center py-10">
+          <p className="text-[#ff99ff]">Nog geen trainingen gepubliceerd.</p>
         </div>
       )}
 
-      {error && <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-400">{error}</div>}
-
-      {workout && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold">{title}</h2>
-            <button onClick={() => setWorkout(null)} className="btn-ghost text-sm">Nieuwe training</button>
+      {upcoming.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold mb-3 text-white">Aankomend</h2>
+          <div className="space-y-2">
+            {upcoming.map((w) => {
+              const count = countByWorkout[w.id] ?? 0
+              const iJoin = signedUpIds.has(w.id)
+              return (
+                <Link
+                  key={w.id}
+                  href={`/athlete/workout/${w.id}`}
+                  className="block card hover:border-magenta-500 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="font-medium text-white">{w.title ?? 'Training zonder titel'}</p>
+                      <p className="text-sm text-[#ff99ff] mt-0.5">
+                        {w.duration} min · {w.intensity}
+                        {w.knee_friendly ? ' · knie-vriendelijk' : ''}
+                      </p>
+                      <p className="text-xs text-[#ff99ff] mt-0.5 opacity-60">
+                        {new Date(w.created_at).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-end gap-1">
+                      {iJoin && (
+                        <span className="text-xs font-semibold px-2 py-1 rounded-full bg-magenta-900/50 text-magenta-400">
+                          Jij doet mee
+                        </span>
+                      )}
+                      {count > 0 && (
+                        <span className="text-xs text-[#ff99ff] opacity-70">
+                          {count} {count === 1 ? 'deelnemer' : 'deelnemers'}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </Link>
+              )
+            })}
           </div>
-          <WorkoutDisplay workout={workout} showKneeAlternatives={kneeFriendly} />
-          <PDFExportButton workout={workout} title={title} />
+        </div>
+      )}
+
+      {done.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold mb-3 text-white">Gedaan</h2>
+          <div className="space-y-2">
+            {done.map((w) => (
+              <Link
+                key={w.id}
+                href={`/athlete/workout/${w.id}`}
+                className="block card hover:border-electric-500 transition-colors opacity-75"
+              >
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium text-white">{w.title ?? 'Training zonder titel'}</p>
+                    <p className="text-sm text-[#ff99ff] mt-0.5">
+                      {w.duration} min · {w.intensity}
+                    </p>
+                    <p className="text-xs text-electric-400 mt-0.5">
+                      ✓ Gedaan op {new Date(w.completed_at).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                    </p>
+                  </div>
+                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-electric-900 text-electric-400">
+                    Gedaan
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>

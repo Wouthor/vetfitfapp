@@ -7,6 +7,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 export default function RegisterPage() {
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
@@ -28,12 +29,17 @@ export default function RegisterPage() {
       return
     }
 
+    if (!name.trim()) {
+      setError('Vul je naam in')
+      return
+    }
+
     setLoading(true)
 
     const res = await fetch('/api/auth/register', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, name: name.trim() }),
     })
     const data = await res.json()
 
@@ -59,6 +65,18 @@ export default function RegisterPage() {
         </div>
 
         <form onSubmit={handleRegister} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-white mb-1.5">Jouw naam</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder="Voor- en achternaam"
+              required
+              className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+            />
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-white mb-1.5">E-mailadres</label>
             <input

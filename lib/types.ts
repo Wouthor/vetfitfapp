@@ -1,6 +1,6 @@
 export type Role = 'instructor' | 'athlete'
 export type Intensity = 'laag' | 'middel' | 'hoog'
-export type Duration = 45 | 60 | 75
+export type Duration = 30 | 45 | 60
 
 export interface Profile {
   id: string
@@ -9,11 +9,19 @@ export interface Profile {
   created_at: string
 }
 
+export interface ExerciseTimer {
+  type: 'simple' | 'interval'
+  work_seconds: number
+  rest_seconds?: number
+  rounds?: number
+}
+
 export interface Exercise {
   naam: string
   beschrijving: string
   duur_of_sets: string
   knie_vriendelijk_alternatief: string
+  timer?: ExerciseTimer | null
 }
 
 export interface WorkoutSection {

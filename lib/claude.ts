@@ -1,7 +1,11 @@
 import Anthropic from '@anthropic-ai/sdk'
 import type { Duration, Intensity, WorkoutContent } from './types'
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+function getClient() {
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) throw new Error('ANTHROPIC_API_KEY is niet ingesteld in .env.local')
+  return new Anthropic({ apiKey })
+}
 
 export async function generateWorkout(params: {
   duration: Duration
@@ -13,9 +17,9 @@ export async function generateWorkout(params: {
 }): Promise<WorkoutContent> {
   const { duration, intensity, kneeFriendly, exampleWorkouts, equipment = [], chatfit = '' } = params
 
-  const warmupMinutes = duration === 45 ? '10' : '15'
-  const mainMinutes = duration === 45 ? '25-30' : duration === 60 ? '35-40' : '45-50'
-  const cooldownMinutes = '5-10'
+  const warmupMinutes = duration === 30 ? '5' : '10'
+  const mainMinutes = duration === 30 ? '15-20' : duration === 45 ? '25-30' : '35-40'
+  const cooldownMinutes = duration === 30 ? '5' : '5-10'
 
   const examples = exampleWorkouts
     .slice(0, 8)
@@ -56,8 +60,14 @@ VEREISTE JSON-STRUCTUUR:
       {
         "naam": "naam van de oefening",
         "beschrijving": "hoe voer je de oefening uit",
-        "duur_of_sets": "bijv. 3x10 of 45 seconden",
-        "knie_vriendelijk_alternatief": "alternatieve oefening zonder kniebelasting"
+        "duur_of_sets": "bijv. 3x10 of 3 ronden: 40s werk / 20s rust",
+        "knie_vriendelijk_alternatief": "alternatieve oefening zonder kniebelasting",
+        "timer": {
+          "type": "interval",
+          "work_seconds": 40,
+          "rest_seconds": 20,
+          "rounds": 3
+        }
       }
     ]
   },
@@ -69,9 +79,16 @@ VEREISTE JSON-STRUCTUUR:
     "duur": "${cooldownMinutes} minuten",
     "oefeningen": [...]
   }
-}`
+}
 
-  const message = await client.messages.create({
+TIMER REGELS (verplicht voor elk oefening):
+- Tijdoefening (bijv. 45 seconden planken): gebruik type "simple", work_seconds = aantal seconden, rounds = 1
+- Intervaltraining (bijv. 40s werk / 20s rust × 3): gebruik type "interval", work_seconds, rest_seconds en rounds invullen
+- Rep-oefening (bijv. 3x10 squats, herhalingen): gebruik timer: null
+- Gebruik realistic tijden (20-60s werk, 10-30s rust)
+- Cooling-down oefeningen zijn bijna altijd "simple" (statisch rekken, bijv. 30 seconden houden)`
+
+  const message = await getClient().messages.create({
     model: 'claude-opus-4-6',
     max_tokens: 8192,
     messages: [{ role: 'user', content: prompt }],
@@ -116,7 +133,7 @@ VEREISTE JSON-STRUCTUUR:
 }
 
 export async function generateKneeFriendlyAlternative(exerciseName: string, description: string): Promise<string> {
-  const message = await client.messages.create({
+  const message = await getClient().messages.create({
     model: 'claude-haiku-4-5-20251001',
     max_tokens: 200,
     messages: [{
