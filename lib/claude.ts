@@ -89,8 +89,8 @@ TIMER REGELS (verplicht voor elk oefening):
 - Cooling-down oefeningen zijn bijna altijd "simple" (statisch rekken, bijv. 30 seconden houden)`
 
   const message = await getClient().messages.create({
-    model: 'claude-opus-4-6',
-    max_tokens: 8192,
+    model: 'claude-sonnet-4-6',
+    max_tokens: 4096,
     messages: [{ role: 'user', content: prompt }],
   })
 

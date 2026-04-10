@@ -30,13 +30,13 @@ export async function POST(request: NextRequest) {
     .from('source_workouts')
     .select('raw_text, file_name')
     .not('raw_text', 'is', null)
-    .limit(100)
+    .limit(50)
 
-  // Pick up to 8 randomly
-  const shuffled = (sourceWorkouts ?? []).sort(() => Math.random() - 0.5).slice(0, 8)
+  // Pick up to 5 randomly
+  const shuffled = (sourceWorkouts ?? []).sort(() => Math.random() - 0.5).slice(0, 5)
   const exampleWorkouts = shuffled
     .filter((w) => w.raw_text)
-    .map((w) => truncateForContext(w.raw_text!, 1500))
+    .map((w) => truncateForContext(w.raw_text!, 1000))
 
   try {
     const content = await generateWorkout({ duration, intensity, kneeFriendly, exampleWorkouts, equipment, chatfit })
