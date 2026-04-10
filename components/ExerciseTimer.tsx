@@ -52,6 +52,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   const [phase, setPhase] = useState<Phase>('idle')
   const [secondsLeft, setSecondsLeft] = useState(workSeconds)
   const [currentRound, setCurrentRound] = useState(1)
+  const [paused, setPaused] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   const totalSeconds = phase === 'rest' ? restSeconds : workSeconds
@@ -79,7 +80,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   }, [restSeconds])
 
   useEffect(() => {
-    if (phase === 'idle' || phase === 'done') return
+    if (phase === 'idle' || phase === 'done' || paused) return
 
     intervalRef.current = setInterval(() => {
       setSecondsLeft((prev) => {
@@ -110,15 +111,25 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
     }, 1000)
 
     return () => stopTimer()
-  }, [phase, currentRound, totalRounds, isInterval, startRest, startWork, stopTimer])
+  }, [phase, paused, currentRound, totalRounds, isInterval, startRest, startWork, stopTimer])
 
   function handleStart() {
     pingSingle(880)
     startWork(1)
   }
 
+  function handlePause() {
+    if (paused) {
+      setPaused(false)
+    } else {
+      stopTimer()
+      setPaused(true)
+    }
+  }
+
   function handleReset() {
     stopTimer()
+    setPaused(false)
     setPhase('idle')
     setCurrentRound(1)
     setSecondsLeft(workSeconds)
@@ -227,12 +238,24 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
         </div>
       </div>
 
-      <button
-        onClick={handleReset}
-        className="text-xs text-[#ff99ff] opacity-60 hover:opacity-100 transition-opacity"
-      >
-        Stoppen
-      </button>
+      <div className="flex gap-4 items-center">
+        <button
+          onClick={handlePause}
+          className={`px-5 py-2 rounded-xl border font-semibold text-sm transition-colors ${
+            paused
+              ? 'border-magenta-500 bg-magenta-900/40 text-magenta-400 hover:bg-magenta-900/60'
+              : 'border-void-border bg-void-input text-white hover:bg-void-border'
+          }`}
+        >
+          {paused ? '▶ Hervat' : '⏸ Pauze'}
+        </button>
+        <button
+          onClick={handleReset}
+          className="text-xs text-[#ff99ff] opacity-60 hover:opacity-100 transition-opacity"
+        >
+          Stoppen
+        </button>
+      </div>
     </div>
   )
 }
