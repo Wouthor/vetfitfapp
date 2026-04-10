@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import InlineSignupButton from '@/components/InlineSignupButton'
 
 export default async function AthletePage() {
   const supabase = await createClient()
@@ -67,36 +68,24 @@ export default async function AthletePage() {
               const count = countByWorkout[w.id] ?? 0
               const iJoin = signedUpIds.has(w.id)
               return (
-                <Link
-                  key={w.id}
-                  href={`/athlete/workout/${w.id}`}
-                  className="block card hover:border-magenta-500 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-white">{w.title ?? 'Training zonder titel'}</p>
-                      <p className="text-sm text-[#ff99ff] mt-0.5">
-                        {w.duration} min · {w.intensity}
-                        {w.knee_friendly ? ' · knie-vriendelijk' : ''}
-                      </p>
-                      <p className="text-xs text-[#ff99ff] mt-0.5 opacity-60">
-                        {new Date(w.created_at).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                      </p>
+                <div key={w.id} className="card hover:border-magenta-500 transition-colors">
+                  <Link href={`/athlete/workout/${w.id}`} className="block">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-white">{w.title ?? 'Training zonder titel'}</p>
+                        <p className="text-sm text-[#ff99ff] mt-0.5">
+                          {w.duration} min · {w.intensity}
+                          {w.knee_friendly ? ' · knie-vriendelijk' : ''}
+                        </p>
+                        <p className="text-xs text-[#ff99ff] mt-0.5 opacity-60">
+                          {new Date(w.created_at).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                        </p>
+                      </div>
+                      <span className="text-xs text-[#ff99ff] opacity-60 ml-2">→</span>
                     </div>
-                    <div className="flex flex-col items-end gap-1">
-                      {iJoin && (
-                        <span className="text-xs font-semibold px-2 py-1 rounded-full bg-magenta-900/50 text-magenta-400">
-                          Jij doet mee
-                        </span>
-                      )}
-                      {count > 0 && (
-                        <span className="text-xs text-[#ff99ff] opacity-70">
-                          {count} {count === 1 ? 'deelnemer' : 'deelnemers'}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
+                  </Link>
+                  <InlineSignupButton workoutId={w.id} isSignedUp={iJoin} count={count} />
+                </div>
               )
             })}
           </div>
