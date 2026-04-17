@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import WorkoutDisplay from '@/components/WorkoutDisplay'
+import WorkoutEditToggle from '@/components/WorkoutEditToggle'
 import PDFExportButton from '@/components/PDFExportButton'
 import type { GeneratedWorkout } from '@/lib/types'
 import PublishButton from '@/components/PublishButton'
@@ -90,6 +91,8 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
           </div>
         </div>
       )}
+
+      <WorkoutEditToggle workoutId={w.id} content={w.content} />
 
       <WorkoutDisplay workout={w.content} showKneeAlternatives={true} />
 
