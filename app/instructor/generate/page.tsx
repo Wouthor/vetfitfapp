@@ -23,6 +23,7 @@ export default function GeneratePage() {
   const [title, setTitle] = useState('')
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
+
   const router = useRouter()
   const supabase = createClient()
 
@@ -80,18 +81,6 @@ export default function GeneratePage() {
     router.push('/instructor')
   }
 
-  async function handleSaveEdit(updated: WorkoutContent) {
-    if (!workoutId) return
-    setSaving(true)
-    await fetch(`/api/workouts/${workoutId}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: updated, title }),
-    })
-    setWorkout(updated)
-    setEditing(false)
-    setSaving(false)
-  }
 
   return (
     <div className="space-y-6">
@@ -167,8 +156,8 @@ export default function GeneratePage() {
             placeholder="Titel van de training (optioneel)"
             className="input"
           />
-          {editing ? (
-            <WorkoutEditor workout={workout} onSave={handleSaveEdit} onCancel={() => setEditing(false)} saving={saving} />
+          {editing && workoutId ? (
+            <WorkoutEditor workoutId={workoutId} initialContent={workout} onClose={() => { setEditing(false) }} />
           ) : (
             <>
               <WorkoutDisplay workout={workout} showKneeAlternatives={true} />
