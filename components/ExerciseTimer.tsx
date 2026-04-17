@@ -71,13 +71,27 @@ function playBellSynth(volume = 1.0) {
   } catch {}
 }
 
-function pingSingle(freq = 880) {
-  playTone(freq, 0.22, 1.0)
+function playPing(volume = 1.0) {
+  // Probeer eerst public/ping.mp3
+  try {
+    const audio = new Audio('/ping.mp3')
+    audio.volume = volume
+    const p = audio.play()
+    if (p !== undefined) {
+      p.catch(() => playTone(880, 0.22, volume))
+    }
+    return
+  } catch {}
+  playTone(880, 0.22, volume)
 }
 
-function pingDouble(freq = 880) {
-  playTone(freq, 0.18, 1.0)
-  setTimeout(() => playTone(freq, 0.18, 1.0), 220)
+function pingSingle() {
+  playPing(1.0)
+}
+
+function pingDouble() {
+  playPing(1.0)
+  setTimeout(() => playPing(1.0), 220)
 }
 
 function pingEnd() {
@@ -110,14 +124,14 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   }, [])
 
   const startWork = useCallback((round: number) => {
-    pingSingle(880)
+    pingSingle()
     setPhase('work')
     setCurrentRound(round)
     setSecondsLeft(workSeconds)
   }, [workSeconds])
 
   const startRest = useCallback(() => {
-    pingDouble(660)
+    pingDouble()
     setPhase('rest')
     setSecondsLeft(restSeconds)
   }, [restSeconds])
@@ -157,7 +171,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   }, [phase, paused, currentRound, totalRounds, isInterval, startRest, startWork, stopTimer])
 
   function handleStart() {
-    pingSingle(880)
+    pingSingle()
     startWork(1)
   }
 
