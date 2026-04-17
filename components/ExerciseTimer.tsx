@@ -136,39 +136,33 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
     setSecondsLeft(restSeconds)
   }, [restSeconds])
 
+  // Tick: alleen aftellen
   useEffect(() => {
     if (phase === 'idle' || phase === 'done' || paused) return
 
     intervalRef.current = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          stopTimer()
-          if (phase === 'work') {
-            if (isInterval && currentRound < totalRounds) {
-              startRest()
-            } else if (isInterval && currentRound >= totalRounds) {
-              pingEnd()
-              setPhase('done')
-            } else {
-              // simple timer, 1 round
-              if (currentRound < totalRounds) {
-                startWork(currentRound + 1)
-              } else {
-                pingEnd()
-                setPhase('done')
-              }
-            }
-          } else if (phase === 'rest') {
-            startWork(currentRound + 1)
-          }
-          return 0
-        }
-        return prev - 1
-      })
+      setSecondsLeft((prev) => Math.max(0, prev - 1))
     }, 1000)
 
     return () => stopTimer()
-  }, [phase, paused, currentRound, totalRounds, isInterval, startRest, startWork, stopTimer])
+  }, [phase, paused, stopTimer])
+
+  // Transitie: reageer op secondsLeft === 0 (buiten state-updater, zodat audio werkt)
+  useEffect(() => {
+    if (secondsLeft !== 0 || phase === 'idle' || phase === 'done') return
+
+    stopTimer()
+    if (phase === 'work') {
+      if (isInterval && currentRound < totalRounds) {
+        startRest()
+      } else {
+        pingEnd()
+        setPhase('done')
+      }
+    } else if (phase === 'rest') {
+      startWork(currentRound + 1)
+    }
+  }, [secondsLeft, phase, currentRound, totalRounds, isInterval, startRest, startWork, stopTimer])
 
   function handleStart() {
     pingSingle()
