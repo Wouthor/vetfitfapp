@@ -10,9 +10,32 @@ interface ExerciseTimerProps {
 
 type Phase = 'idle' | 'work' | 'rest' | 'done'
 
+let sharedAudioCtx: AudioContext | null = null
+
+function getAudioCtx(): AudioContext {
+  if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
+    sharedAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+  }
+  return sharedAudioCtx
+}
+
+// Moet worden aangeroepen vanuit een user gesture om audio te deblokkeren
+function initAudio() {
+  try {
+    const ctx = getAudioCtx()
+    // Speel een stille buffer — dit ontgrendelt de context op iOS/Safari
+    const buf = ctx.createBuffer(1, 1, 22050)
+    const src = ctx.createBufferSource()
+    src.buffer = buf
+    src.connect(ctx.destination)
+    src.start(0)
+    if (ctx.state === 'suspended') ctx.resume()
+  } catch {}
+}
+
 function playTone(frequency: number, duration: number, volume = 1.0) {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const ctx = getAudioCtx()
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
@@ -26,42 +49,22 @@ function playTone(frequency: number, duration: number, volume = 1.0) {
   } catch {}
 }
 
-// Bell sound: meerdere harmonics met lange uitklank (echt bel-gevoel)
-function playBell(volume = 1.0) {
-  // Probeer eerst een eigen geluidsbestand (public/bell.mp3)
-  try {
-    const audio = new Audio('/bell.mp3')
-    audio.volume = volume
-    const p = audio.play()
-    if (p !== undefined) {
-      p.then(() => { /* gelukt */ }).catch(() => {
-        // Geen bestand gevonden — val terug op synthesizer
-        playBellSynth(volume)
-      })
-    }
-    return
-  } catch {}
-  playBellSynth(volume)
-}
-
 function playBellSynth(volume = 1.0) {
   try {
-    const ctx = new (window.AudioContext || (window as any).webkitAudioContext)()
-    // Bel bestaat uit grondtoon + harmonics
+    const ctx = getAudioCtx()
     const harmonics: [number, number][] = [
-      [880, 1.0],   // A5 — grondtoon
-      [1108, 0.6],  // C#6
-      [1318, 0.4],  // E6
-      [1760, 0.25], // A6 — octaaf
+      [880, 1.0],
+      [1108, 0.6],
+      [1318, 0.4],
+      [1760, 0.25],
     ]
-    harmonics.forEach(([freq, amp], i) => {
+    harmonics.forEach(([freq, amp]) => {
       const osc = ctx.createOscillator()
       const gain = ctx.createGain()
       osc.connect(gain)
       gain.connect(ctx.destination)
       osc.type = 'sine'
       osc.frequency.value = freq
-      // Snelle aanslag, lange uitklank (2.5s)
       gain.gain.setValueAtTime(0, ctx.currentTime)
       gain.gain.linearRampToValueAtTime(volume * amp, ctx.currentTime + 0.01)
       gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5)
@@ -71,31 +74,17 @@ function playBellSynth(volume = 1.0) {
   } catch {}
 }
 
-function playPing(volume = 1.0) {
-  // Probeer eerst public/ping.mp3
-  try {
-    const audio = new Audio('/ping.mp3')
-    audio.volume = volume
-    const p = audio.play()
-    if (p !== undefined) {
-      p.catch(() => playTone(880, 0.22, volume))
-    }
-    return
-  } catch {}
-  playTone(880, 0.22, volume)
-}
-
 function pingSingle() {
-  playPing(1.0)
+  playTone(880, 0.22, 1.0)
 }
 
 function pingDouble() {
-  playPing(1.0)
-  setTimeout(() => playPing(1.0), 220)
+  playTone(880, 0.22, 1.0)
+  setTimeout(() => playTone(880, 0.22, 1.0), 220)
 }
 
 function pingEnd() {
-  playBell(1.0)
+  playBellSynth(1.0)
 }
 
 const RADIUS = 54
@@ -165,7 +154,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   }, [secondsLeft, phase, currentRound, totalRounds, isInterval, startRest, startWork, stopTimer])
 
   function handleStart() {
-    pingSingle()
+    initAudio()   // ontgrendel AudioContext tijdens user gesture
     startWork(1)
   }
 

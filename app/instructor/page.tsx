@@ -18,7 +18,7 @@ export default async function InstructorDashboard() {
       .select('workout_id'),
     supabase
       .from('training_ratings')
-      .select('workout_id, rating'),
+      .select('workout_id, rating, comment'),
   ])
 
   const signupCountByWorkout: Record<string, number> = {}
@@ -26,18 +26,23 @@ export default async function InstructorDashboard() {
     signupCountByWorkout[s.workout_id] = (signupCountByWorkout[s.workout_id] ?? 0) + 1
   }
 
-  const ratingsByWorkout: Record<string, number[]> = {}
+  const ratingsByWorkout: Record<string, { rating: number; comment?: string | null }[]> = {}
   for (const r of ratings ?? []) {
     if (!ratingsByWorkout[r.workout_id]) ratingsByWorkout[r.workout_id] = []
-    ratingsByWorkout[r.workout_id].push(r.rating)
+    ratingsByWorkout[r.workout_id].push({ rating: r.rating, comment: r.comment })
   }
   function avgRating(id: string): number | null {
     const rs = ratingsByWorkout[id]
     if (!rs?.length) return null
-    return Math.round((rs.reduce((a, b) => a + b, 0) / rs.length) * 10) / 10
+    return Math.round((rs.reduce((a, b) => a + b.rating, 0) / rs.length) * 10) / 10
   }
   function starsDisplay(avg: number): string {
     return '★'.repeat(Math.round(avg)) + '☆'.repeat(5 - Math.round(avg))
+  }
+  function commentsForWorkout(id: string): string[] {
+    return (ratingsByWorkout[id] ?? [])
+      .map(r => r.comment)
+      .filter((c): c is string => !!c)
   }
 
   return (
@@ -96,9 +101,14 @@ export default async function InstructorDashboard() {
                       </p>
                     )}
                     {avgRating(w.id) !== null && (
-                      <p className="text-xs text-neon-400 mt-0.5">
-                        {starsDisplay(avgRating(w.id)!)} {avgRating(w.id)}/5 ({ratingsByWorkout[w.id].length}×)
-                      </p>
+                      <div className="mt-0.5">
+                        <p className="text-xs text-neon-400">
+                          {starsDisplay(avgRating(w.id)!)} {avgRating(w.id)}/5 ({ratingsByWorkout[w.id].length}×)
+                        </p>
+                        {commentsForWorkout(w.id).map((c, i) => (
+                          <p key={i} className="text-xs text-[#ff99ff]/70 mt-0.5 italic">"{c}"</p>
+                        ))}
+                      </div>
                     )}
                   </div>
                   <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
