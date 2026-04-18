@@ -72,7 +72,7 @@ export default function StarRating({ workoutId, initialRating, initialComment }:
       <p className="text-sm font-semibold text-white">Beoordeel deze training</p>
 
       {/* Sterren */}
-      <div className="flex items-center gap-1">
+      <div className="flex items-center space-x-1">
         {[1, 2, 3, 4, 5].map((star) => (
           <button
             key={star}

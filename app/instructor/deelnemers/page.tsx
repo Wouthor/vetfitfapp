@@ -87,7 +87,7 @@ export default async function DeelnemersPage() {
                   <p className="font-semibold text-white">{athlete.name ?? athlete.email}</p>
                   <p className="text-xs text-[#ff99ff] opacity-60">{athlete.email}</p>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center space-x-2">
                   {hasStreakBadge && (
                     <span className="text-xs font-semibold px-2 py-1 rounded-full bg-neon-400/20 border border-neon-400 text-neon-400">
                       {badgeLabel}

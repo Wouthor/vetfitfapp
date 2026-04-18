@@ -26,7 +26,7 @@ export default function CompleteButton({ workoutId, completedAt }: CompleteButto
 
   if (done && date) {
     return (
-      <div className="flex items-center gap-2 py-3 px-4 bg-void-card border border-green-700 rounded-xl">
+      <div className="flex items-center space-x-2 py-3 px-4 bg-void-card border border-green-700 rounded-xl">
         <span className="text-green-400">✓</span>
         <div>
           <p className="text-sm font-semibold text-green-400">Training gedaan</p>
@@ -50,7 +50,7 @@ export default function CompleteButton({ workoutId, completedAt }: CompleteButto
     <button
       onClick={handleComplete}
       disabled={loading}
-      className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-void-card border border-green-700 hover:bg-green-900/40 text-green-400 font-semibold rounded-xl transition-colors"
+      className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-void-card border border-green-700 hover:bg-green-900/40 text-green-400 font-semibold rounded-xl transition-colors"
     >
       {loading ? 'Bezig...' : <><span>✓</span> Training gedaan</>}
     </button>

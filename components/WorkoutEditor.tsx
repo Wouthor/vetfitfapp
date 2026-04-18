@@ -41,7 +41,7 @@ function ExerciseEditor({
 }) {
   return (
     <div className="bg-void-input border border-void-border rounded-xl p-4 space-y-3">
-      <div className="flex gap-2 items-start">
+      <div className="flex space-x-2 items-start">
         <input
           value={exercise.naam}
           onChange={(e) => onChange({ ...exercise, naam: e.target.value })}
@@ -164,7 +164,7 @@ export default function WorkoutEditor({ workoutId, initialContent, onClose }: Wo
         )
       })}
 
-      <div className="flex gap-3">
+      <div className="flex space-x-3">
         <button onClick={onClose} className="btn-secondary flex-1">
           Annuleren
         </button>

@@ -17,7 +17,7 @@ export default function DeleteWorkoutButton({ workoutId }: { workoutId: string }
 
   if (confirm) {
     return (
-      <div className="flex gap-2">
+      <div className="flex space-x-2">
         <button
           onClick={handleDelete}
           disabled={loading}

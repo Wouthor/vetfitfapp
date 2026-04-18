@@ -39,11 +39,11 @@ export default function SyncButton() {
 
   return (
     <div className="space-y-2">
-      <div className="flex gap-2">
+      <div className="flex space-x-2">
         <button
           onClick={() => handleSync(false)}
           disabled={loading}
-          className="btn-secondary flex-1 flex items-center justify-center gap-2"
+          className="btn-secondary flex-1 flex items-center justify-center space-x-2"
         >
           {loading ? <><span className="animate-spin">⟳</span> Bezig...</> : <><span>🔄</span> Drive synchroniseren</>}
         </button>

@@ -8,7 +8,7 @@ interface ChatFitInputProps {
 export default function ChatFitInput({ value, onChange }: ChatFitInputProps) {
   return (
     <div>
-      <div className="flex items-center gap-2 mb-2">
+      <div className="flex items-center space-x-2 mb-2">
         <span className="text-lg">💬</span>
         <label className="text-sm font-medium text-gray-300">
           ChatFit <span className="text-gray-500 font-normal">— optioneel</span>

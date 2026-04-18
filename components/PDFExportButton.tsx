@@ -41,7 +41,7 @@ export default function PDFExportButton({ workout, title }: PDFExportButtonProps
     <button
       onClick={handleExport}
       disabled={loading}
-      className="btn-secondary flex items-center gap-2 justify-center"
+      className="btn-secondary flex items-center space-x-2 justify-center"
     >
       {loading ? (
         <>

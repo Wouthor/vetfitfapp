@@ -25,7 +25,7 @@ export default function SignupButton({ workoutId, isSignedUp: initial }: SignupB
   if (isSignedUp) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center gap-2 py-3 px-4 bg-void-card border border-magenta-500 rounded-xl">
+        <div className="flex items-center space-x-2 py-3 px-4 bg-void-card border border-magenta-500 rounded-xl">
           <span className="text-magenta-400 text-lg">✓</span>
           <p className="text-sm font-semibold text-magenta-400">Je doet mee!</p>
           <button
@@ -44,7 +44,7 @@ export default function SignupButton({ workoutId, isSignedUp: initial }: SignupB
     <button
       onClick={handleToggle}
       disabled={loading}
-      className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-void-card border border-magenta-500 hover:bg-magenta-900/40 text-magenta-400 font-semibold rounded-xl transition-colors"
+      className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-void-card border border-magenta-500 hover:bg-magenta-900/40 text-magenta-400 font-semibold rounded-xl transition-colors"
     >
       {loading ? 'Bezig...' : <><span>🏋️</span> Ik doe mee!</>}
     </button>

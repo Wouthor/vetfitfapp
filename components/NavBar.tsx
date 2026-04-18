@@ -23,7 +23,7 @@ export default function NavBar({ role, email }: NavBarProps) {
   return (
     <header className="bg-magenta-700 border-b border-magenta-600 sticky top-0 z-50">
       <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href={role === 'instructor' ? '/instructor' : '/athlete'} className="flex items-center gap-2">
+        <Link href={role === 'instructor' ? '/instructor' : '/athlete'} className="flex items-center space-x-2">
           <span className="text-xl">🏋️</span>
           <span className="font-bold text-white">VetFitFapp</span>
           {role === 'instructor' && (
@@ -33,7 +33,7 @@ export default function NavBar({ role, email }: NavBarProps) {
           )}
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center space-x-3">
           {email && (
             <span className="text-sm text-[#ffccff] hidden sm:block truncate max-w-32">
               {email}

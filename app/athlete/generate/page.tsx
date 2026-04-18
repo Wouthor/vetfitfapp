@@ -95,7 +95,7 @@ export default function AthleteGeneratePage() {
           </div>
 
           <button onClick={() => setKneeFriendly(!kneeFriendly)}
-            className={`w-full flex items-center gap-3 py-4 px-4 rounded-xl transition-colors ${kneeFriendly ? 'bg-blue-900/50 border border-blue-700 text-blue-300' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
+            className={`w-full flex items-center space-x-3 py-4 px-4 rounded-xl transition-colors ${kneeFriendly ? 'bg-blue-900/50 border border-blue-700 text-blue-300' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'}`}>
             <span className="text-2xl">🦵</span>
             <div className="text-left">
               <p className="font-semibold">Knieblessures</p>
@@ -111,7 +111,7 @@ export default function AthleteGeneratePage() {
 
           <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full text-lg py-4">
             {loading ? (
-              <span className="flex items-center justify-center gap-2">
+              <span className="flex items-center justify-center space-x-2">
                 <span className="animate-spin inline-block">⟳</span> Training wordt gemaakt...
               </span>
             ) : 'Training starten 🏋️'}

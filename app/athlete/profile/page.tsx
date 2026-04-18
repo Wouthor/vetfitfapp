@@ -90,7 +90,7 @@ export default async function AthleteProfilePage() {
           <p className="text-sm text-[#ff99ff]">
             Nog {5 - streak} training{5 - streak !== 1 ? 'en' : ''} op rij voor je eerste badge!
           </p>
-          <div className="flex justify-center gap-1 mt-3">
+          <div className="flex justify-center space-x-1 mt-3">
             {Array.from({ length: 5 }).map((_, i) => (
               <div
                 key={i}

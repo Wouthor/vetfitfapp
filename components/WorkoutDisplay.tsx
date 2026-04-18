@@ -126,7 +126,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
       : sectionConfig[slides[current].sectionKey].dot
 
     return (
-      <div className="flex items-center gap-2 px-1">
+      <div className="flex items-center space-x-2 px-1">
         <div className="flex-1 h-1.5 bg-void-input rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all duration-300 ${color}`}
@@ -172,7 +172,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
                   </div>
                   <div className="space-y-1.5">
                     {section.oefeningen.map((ex, i) => (
-                      <div key={i} className="flex items-center gap-3 bg-void-input rounded-lg px-3 py-2">
+                      <div key={i} className="flex items-center space-x-3 bg-void-input rounded-lg px-3 py-2">
                         <span className={`w-5 h-5 rounded-full text-xs font-bold flex items-center justify-center flex-shrink-0 ${cfg.tag}`}>
                           {i + 1}
                         </span>
@@ -209,7 +209,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
   return (
     <div className="space-y-3">
       {/* Sectietabs — emoji + verkorte naam op mobiel */}
-      <div className="flex gap-1.5">
+      <div className="flex space-x-1.5">
         <button
           onClick={() => goTo(-1)}
           className="py-2 px-3 rounded-xl text-xs font-semibold transition-all border bg-void-card border-void-border text-[#ff99ff] shrink-0"
@@ -243,7 +243,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
       >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-void-subtle">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center space-x-2">
             <span className={`text-xs font-semibold uppercase tracking-wide ${config.accent}`}>
               {config.emoji} <span className="hidden sm:inline">{config.label}</span><span className="sm:hidden">{config.short}</span>
             </span>
@@ -270,7 +270,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           {bullets.length > 1 ? (
             <ul className="space-y-2">
               {bullets.map((bullet, i) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-[#ffccff]">
+                <li key={i} className="flex items-start space-x-2 text-sm text-[#ffccff]">
                   <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 ${config.dot}`} />
                   <span>{bullet}</span>
                 </li>
@@ -281,7 +281,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           )}
 
           {showKneeAlternatives && slide.exercise.knie_vriendelijk_alternatief && (
-            <div className="flex items-start gap-2 mt-4 pt-4 border-t border-void-subtle">
+            <div className="flex items-start space-x-2 mt-4 pt-4 border-t border-void-subtle">
               <span className="text-sm flex-shrink-0">🦵</span>
               <div>
                 <span className="text-xs font-semibold text-electric-400 uppercase tracking-wide">Knie-alternatief </span>
@@ -302,7 +302,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
         </div>
 
         {/* Navigatieknoppen */}
-        <div className="flex items-center justify-between px-4 pb-4 gap-3">
+        <div className="flex items-center justify-between px-4 pb-4">
           <button
             onClick={() => goTo(current - 1)}
             disabled={current === 0}

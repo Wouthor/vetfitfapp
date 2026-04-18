@@ -142,7 +142,7 @@ export default function GeneratePage() {
         <ChatFitInput value={chatfit} onChange={setChatfit} />
 
         <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full">
-          {loading ? <span className="flex items-center justify-center gap-2"><span className="animate-spin">⟳</span> Genereren...</span> : 'Training genereren'}
+          {loading ? <span className="flex items-center justify-center space-x-2"><span className="animate-spin">⟳</span> Genereren...</span> : 'Training genereren'}
         </button>
       </div>
 
@@ -161,7 +161,7 @@ export default function GeneratePage() {
           ) : (
             <>
               <WorkoutDisplay workout={workout} showKneeAlternatives={true} />
-              <div className="flex gap-3">
+              <div className="flex space-x-3">
                 <button onClick={() => setEditing(true)} className="btn-secondary flex-1">Bewerken</button>
                 <PDFExportButton workout={workout} title={title} />
               </div>

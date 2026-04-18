@@ -96,7 +96,7 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
 
       <WorkoutDisplay workout={w.content} showKneeAlternatives={true} />
 
-      <div className="flex gap-3">
+      <div className="flex space-x-3">
         <PDFExportButton workout={w.content} title={w.title ?? 'Training'} />
         {!w.published && <PublishButton workoutId={w.id} />}
       </div>

@@ -29,7 +29,7 @@ export default function EquipmentPicker({ selected, onChange }: EquipmentPickerP
               key={item.id}
               type="button"
               onClick={() => toggle(item.id)}
-              className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
+              className={`flex items-center space-x-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
                 active
                   ? 'bg-magenta-500/20 border border-magenta-500 text-magenta-300'
                   : 'bg-void-input border border-void-border text-[#7b8db8] hover:border-magenta-700'

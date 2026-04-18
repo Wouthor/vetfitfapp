@@ -12,7 +12,7 @@ export default function WhatsAppReminderButton() {
       href={url}
       target="_blank"
       rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 w-full py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#20b858] text-white font-bold transition-colors"
+      className="flex items-center justify-center space-x-2 w-full py-3 px-4 rounded-2xl bg-[#25D366] hover:bg-[#20b858] text-white font-bold transition-colors"
     >
       📲 Stuur WhatsApp reminder
     </a>

@@ -201,7 +201,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
     return (
       <button
         onClick={handleStart}
-        className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl border border-magenta-500/60 bg-magenta-950/40 hover:bg-magenta-900/60 transition-colors"
+        className="w-full flex items-center justify-center space-x-3 py-4 rounded-2xl border border-magenta-500/60 bg-magenta-950/40 hover:bg-magenta-900/60 transition-colors"
       >
         <span className="text-2xl">▶</span>
         <div className="text-left">
@@ -219,10 +219,10 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   // ── DONE ────────────────────────────────────────────────────────────
   if (phase === 'done') {
     return (
-      <div className="flex flex-col items-center gap-3 py-4 rounded-2xl border border-green-500/40 bg-green-950/40">
+      <div className="flex flex-col items-center space-y-3 py-4 rounded-2xl border border-green-500/40 bg-green-950/40">
         <p className="text-4xl">✓</p>
         <p className="font-bold text-green-400">Oefening klaar!</p>
-        <div className="flex gap-3">
+        <div className="flex space-x-3">
           <button
             onClick={handleReset}
             className="px-4 py-2 rounded-xl border border-void-border text-[#ff99ff] text-sm"
@@ -242,9 +242,9 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
 
   // ── ACTIVE TIMER ────────────────────────────────────────────────────
   return (
-    <div className={`flex flex-col items-center gap-3 py-5 rounded-2xl border ${bgColor} transition-colors`}>
+    <div className={`flex flex-col items-center space-y-3 py-5 rounded-2xl border ${bgColor} transition-colors`}>
       {isInterval && (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center space-x-2">
           <span className="text-xs font-bold text-[#ff99ff] uppercase tracking-wide">
             Ronde {currentRound} / {totalRounds}
           </span>
@@ -278,7 +278,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
         </div>
       </div>
 
-      <div className="flex gap-4 items-center">
+      <div className="flex space-x-4 items-center">
         <button
           onClick={handlePause}
           className={`px-5 py-2 rounded-xl border font-semibold text-sm transition-colors ${

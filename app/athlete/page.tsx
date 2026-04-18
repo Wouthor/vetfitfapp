@@ -44,7 +44,7 @@ export default async function AthletePage() {
           <h1 className="text-2xl font-bold text-white">Trainingen</h1>
           <p className="text-[#ff99ff] mt-1">Gepubliceerde trainingen van de instructor</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex space-x-2">
           <Link href="/athlete/profile" className="btn-ghost text-sm px-3 py-2">
             Mijn profiel
           </Link>
