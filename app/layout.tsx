@@ -11,6 +11,23 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="nl" suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Foutopvang: toon JS-crashes zichtbaar op scherm */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          window.onerror = function(msg, src, line, col, err) {
+            var div = document.getElementById('js-error-banner') || document.createElement('div');
+            div.id = 'js-error-banner';
+            div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#cc0000;color:#fff;padding:10px;z-index:99999;font-size:11px;word-break:break-all;white-space:pre-wrap';
+            div.textContent = 'JS FOUT: ' + msg + '\\n' + src + ' regel ' + line;
+            document.body && document.body.appendChild(div);
+          };
+          window.onunhandledrejection = function(e) {
+            var div = document.getElementById('js-error-banner') || document.createElement('div');
+            div.id = 'js-error-banner';
+            div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#cc0000;color:#fff;padding:10px;z-index:99999;font-size:11px;word-break:break-all;white-space:pre-wrap';
+            div.textContent = 'PROMISE FOUT: ' + (e.reason && e.reason.message ? e.reason.message : String(e.reason));
+            document.body && document.body.appendChild(div);
+          };
+        ` }} />
         {/* Polyfills voor iOS 12 — moet vóór alle andere scripts laden */}
         <script dangerouslySetInnerHTML={{ __html: `
           if (typeof globalThis === 'undefined') { var globalThis = window; }
