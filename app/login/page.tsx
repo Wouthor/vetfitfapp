@@ -14,20 +14,25 @@ export default function LoginPage() {
   const router = useRouter()
   const supabase = createClient()
 
-  async function handleLogin(e: React.FormEvent) {
+  function handleLogin(e: React.FormEvent) {
     e.preventDefault()
     setLoading(true)
     setError('')
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-
-    if (error) {
-      setError('Ongeldig e-mailadres of wachtwoord')
-      setLoading(false)
-    } else {
-      router.push('/')
-      router.refresh()
-    }
+    supabase.auth.signInWithPassword({ email, password })
+      .then(function(result) {
+        if (result.error) {
+          setError('Ongeldig e-mailadres of wachtwoord (' + result.error.message + ')')
+          setLoading(false)
+        } else {
+          router.push('/')
+          router.refresh()
+        }
+      })
+      .catch(function(err) {
+        setError('Fout: ' + (err && err.message ? err.message : String(err)))
+        setLoading(false)
+      })
   }
 
   return (
@@ -72,7 +77,12 @@ export default function LoginPage() {
             </div>
           )}
 
-          <button type="submit" disabled={loading} className="btn-primary w-full text-center">
+          <button
+            type="submit"
+            onClick={function(e) { if (!loading) handleLogin(e as any) }}
+            disabled={loading}
+            className="btn-primary w-full text-center"
+          >
             {loading ? 'Bezig met inloggen...' : 'Inloggen'}
           </button>
         </form>
