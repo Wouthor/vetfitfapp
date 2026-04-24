@@ -19,18 +19,22 @@ function getAudioCtx(): AudioContext {
   return sharedAudioCtx
 }
 
-// Moet worden aangeroepen vanuit een user gesture om audio te deblokkeren
-function initAudio() {
+// Ontgrendelt de AudioContext tijdens een user gesture en geeft Promise terug
+function initAudio(): Promise<void> {
   try {
     const ctx = getAudioCtx()
-    // Speel een stille buffer — dit ontgrendelt de context op iOS/Safari
-    const buf = ctx.createBuffer(1, 1, 22050)
+    // Speel een heel kort, zacht toontje — iOS vereist écht geluid om te ontgrendelen
+    const buf = ctx.createBuffer(1, ctx.sampleRate * 0.05, ctx.sampleRate)
+    const data = buf.getChannelData(0)
+    for (let i = 0; i < data.length; i++) data[i] = 0.001 * Math.sin(i * 0.1)
     const src = ctx.createBufferSource()
     src.buffer = buf
     src.connect(ctx.destination)
     src.start(0)
-    if (ctx.state === 'suspended') ctx.resume()
+    // Resume is async — wacht erop zodat tonen daarna zeker werken
+    if (ctx.state === 'suspended') return ctx.resume()
   } catch {}
+  return Promise.resolve()
 }
 
 function playTone(frequency: number, duration: number, volume = 1.0) {
@@ -154,8 +158,8 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   }, [secondsLeft, phase, currentRound, totalRounds, isInterval, startRest, startWork, stopTimer])
 
   function handleStart() {
-    initAudio()   // ontgrendel AudioContext tijdens user gesture
-    startWork(1)
+    // Wacht tot AudioContext echt draait vóór eerste ping (kritiek op iOS)
+    initAudio().then(() => startWork(1)).catch(() => startWork(1))
   }
 
   function handlePause() {
