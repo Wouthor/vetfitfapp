@@ -88,6 +88,10 @@ export default async function InstructorDashboard() {
       </Link>
 
       <div className="border-t border-ink">
+        <Link href="/instructor/bibliotheek" className="flex items-center justify-between py-3.5 border-b border-line group">
+          <span className="font-label font-bold text-sm uppercase tracking-wider">Trainingsbibliotheek</span>
+          <span aria-hidden="true" className="text-muted group-hover:text-ink transition-colors">→</span>
+        </Link>
         <Link href="/instructor/deelnemers" className="flex items-center justify-between py-3.5 border-b border-line group">
           <span className="font-label font-bold text-sm uppercase tracking-wider">Deelnemers</span>
           <span aria-hidden="true" className="text-muted group-hover:text-ink transition-colors">→</span>

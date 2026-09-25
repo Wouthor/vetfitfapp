@@ -14,6 +14,17 @@ function isBanned(ex: Exercise): boolean {
   return BANNED_EXERCISES.some((b) => b.pattern.test(text))
 }
 
+export interface LibraryPromptItem {
+  id: string
+  title: string
+  role: string
+  required: boolean
+  durationLabel: string | null
+  markdown: string
+  notes: string[]
+  limited: string[]
+}
+
 function getClient() {
   const apiKey = process.env.ANTHROPIC_API_KEY
   if (!apiKey) throw new Error('ANTHROPIC_API_KEY is niet ingesteld in .env.local')
@@ -28,8 +39,9 @@ export async function generateWorkout(params: {
   equipment?: string[]
   chatfit?: string
   useWebSearch?: boolean
-}): Promise<{ content: WorkoutContent; title: string }> {
-  const { duration, intensity, kneeFriendly, exampleWorkouts, equipment = [], chatfit = '', useWebSearch = false } = params
+  library?: LibraryPromptItem[]
+}): Promise<{ content: WorkoutContent; title: string; sourceLibraryIds: string[] }> {
+  const { duration, intensity, kneeFriendly, exampleWorkouts, equipment = [], chatfit = '', useWebSearch = false, library = [] } = params
 
   const warmupMinutes = duration === 30 ? '5' : '10'
   const mainMinutes = duration === 30 ? '15-20' : duration === 45 ? '25-30' : '35-40'
@@ -40,9 +52,21 @@ export async function generateWorkout(params: {
     .map((w, i) => `--- Training ${i + 1} ---\n${w}`)
     .join('\n\n')
 
-  const prompt = `Je bent een ervaren bootcamp instructeur. Genereer een nieuwe bootcamp training${useWebSearch ? ', geinspireerd door zowel de voorbeeldtrainingen hieronder als actuele bootcamp/HIIT-oefeningen die je online opzoekt' : ' op basis van de onderstaande voorbeeldtrainingen'}.
+  const libraryBlock = library
+    .map((l) => [
+      `--- [id: ${l.id}] ${l.required ? 'VERPLICHT · ' : ''}rol: ${l.role} · "${l.title}" · ${l.durationLabel ?? 'duur onbekend'} ---`,
+      l.notes.length ? `Materiaalvervanging: ${l.notes.join('; ')}` : '',
+      l.limited.length ? `Beperkt materiaal: ${l.limited.join('; ')}` : '',
+      l.markdown.length > 3500 ? l.markdown.slice(0, 3500) + '\n[...ingekort]' : l.markdown,
+    ].filter(Boolean).join('\n'))
+    .join('\n\n')
 
-VOORBEELDTRAININGEN (gebruik deze als inspiratie voor oefeningen en structuur):
+  const prompt = `Je bent een ervaren bootcamp instructeur. Genereer een nieuwe bootcamp training${library.length ? ', vooral opgebouwd uit de bibliotheektrainingen hieronder' : ''}${useWebSearch ? ', aangevuld met actuele bootcamp/HIIT-oefeningen die je online opzoekt' : ''}.
+${library.length ? `
+BIBLIOTHEEKTRAININGEN (Engelstalig, uit de BootCraft-bibliotheek; dit is je belangrijkste bron):
+${libraryBlock}
+` : ''}
+EIGEN VOORBEELDTRAININGEN VAN DE INSTRUCTEUR (inspiratie voor stijl en oefeningen):
 ${examples}
 
 PARAMETERS VOOR DE NIEUWE TRAINING:
@@ -57,7 +81,12 @@ TIJDSVERDELING:
 - Cooling-down: ~${cooldownMinutes} minuten
 
 INSTRUCTIES:
-${useWebSearch ? `- Zoek online naar 2-3 frisse bootcamp- of HIIT-oefeningen ter inspiratie (bijv. via fitness-blogs of trainingsprogramma's) en verwerk wat daar bruikbaar is\n- Ook bij oefeningen uit een webbron geldt: gebruik ALLEEN het hierboven genoemde beschikbare materiaal, nooit materiaal dat je online tegenkomt maar dat niet in de lijst staat\n` : ''}${BANNED_RULE}
+${library.length ? `- Bouw de training vooral op uit de bibliotheektrainingen: de warming-up als warming-up, het beste hoofddeel (kies er één of combineer) als hoofddeel, en de afsluiter als laatste blok van het hoofddeel. Trainingen met VERPLICHT moeten er herkenbaar in zitten
+- Neem de opzet over (rondes, tijden, AMRAP/EMOM/tabata, spelregels, partner- of teamvorm), vertaal alles naar het Nederlands en pas de lengte aan zodat het in de tijdsverdeling past
+- Volg de materiaalvervangingen. Bij beperkt materiaal: laat dat materiaal op één station gebruiken en laat de rest van de groep tegelijk iets anders doen
+- De groep bestaat uit 5 tot 10 personen; geef bij partner- of teamvormen aan wat je doet bij een oneven aantal
+- Zet in "gebruikte_bronnen" de id's van de bibliotheektrainingen die je echt hebt gebruikt
+` : ''}${useWebSearch ? `- Zoek online naar 2-3 frisse bootcamp- of HIIT-oefeningen ter inspiratie (bijv. via fitness-blogs of trainingsprogramma's) en verwerk wat daar bruikbaar is\n- Ook bij oefeningen uit een webbron geldt: gebruik ALLEEN het hierboven genoemde beschikbare materiaal, nooit materiaal dat je online tegenkomt maar dat niet in de lijst staat\n` : ''}${BANNED_RULE}
 - Geef ALTIJD een knie-vriendelijk alternatief per oefening, ook als er geen knieblessures zijn
 - Varieer de oefeningen, gebruik de voorbeelden als basis maar wees creatief
 - Gebruik ALLEEN het beschikbare materiaal in de oefeningen — geen materiaal dat niet in de lijst staat
@@ -69,7 +98,8 @@ ${chatfit ? '- Houd GOED rekening met de speciale wens van de ChatFit instructie
 
 VEREISTE JSON-STRUCTUUR:
 {
-  "titel": "Een korte, pakkende Nederlandse naam voor deze specifieke training (bijv. 'De Vulkaan', 'Stalen Benen', 'Ochtendstorm', 'De Ijzeren Ronde'). Geen generieke naam zoals 'Bootcamp Training'.",
+  "titel": "Een korte, pakkende Nederlandse naam voor deze specifieke training (bijv. 'De Vulkaan', 'Stalen Benen', 'Ochtendstorm', 'De Ijzeren Ronde'). Geen generieke naam zoals 'Bootcamp Training'.",${library.length ? `
+  "gebruikte_bronnen": ["id van elke gebruikte bibliotheektraining"],` : ''}
   "warming_up": {
     "duur": "${warmupMinutes} minuten",
     "oefeningen": [
@@ -104,13 +134,18 @@ TIMER REGELS (verplicht voor elk oefening):
 - Gebruik realistic tijden (20-60s werk, 10-30s rust)
 - Cooling-down oefeningen zijn bijna altijd "simple" (statisch rekken, bijv. 30 seconden houden)`
 
-  function parseAndExtract(str: string): { content: WorkoutContent; title: string } {
+  const libraryIds = new Set(library.map((l) => l.id))
+
+  function parseAndExtract(str: string): { content: WorkoutContent; title: string; sourceLibraryIds: string[] } {
     const parsed = JSON.parse(str)
     const titel: string = typeof parsed.titel === 'string' && parsed.titel.trim()
       ? parsed.titel.trim()
       : 'Bootcamp Training'
-    const { titel: _unused, ...content } = parsed
-    return { content: content as WorkoutContent, title: titel }
+    // Alleen id's die we echt hebben aangeboden; verplichte bronnen tellen altijd mee
+    const claimed: string[] = Array.isArray(parsed.gebruikte_bronnen) ? parsed.gebruikte_bronnen.filter((id: unknown) => typeof id === 'string' && libraryIds.has(id)) : []
+    const sourceLibraryIds = Array.from(new Set([...library.filter((l) => l.required).map((l) => l.id), ...claimed]))
+    const { titel: _unused, gebruikte_bronnen: _bronnen, ...content } = parsed
+    return { content: content as WorkoutContent, title: titel, sourceLibraryIds }
   }
 
   // Repareer afgekapte JSON: knip de onvolledige laatste entry weg en sluit alle haakjes af
@@ -154,7 +189,7 @@ TIMER REGELS (verplicht voor elk oefening):
     const end = text.lastIndexOf('}')
     const jsonStr = end > start ? text.slice(start, end + 1) : text.slice(start)
 
-    let result: { content: WorkoutContent; title: string } | null = null
+    let result: { content: WorkoutContent; title: string; sourceLibraryIds: string[] } | null = null
     try {
       result = parseAndExtract(jsonStr)
     } catch {

@@ -47,6 +47,7 @@ export interface GeneratedWorkout {
   completed_at: string | null
   created_at: string
   updated_at: string
+  source_library_ids?: string[] | null
 }
 
 export interface SourceWorkout {

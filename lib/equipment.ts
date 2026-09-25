@@ -10,6 +10,7 @@ export const EQUIPMENT_LIST: EquipmentItem[] = [
   { id: 'springtouwen', label: 'Springtouwen', emoji: '🪢' },
   { id: 'dumbbells', label: '2 Dumbbells', emoji: '💪' },
   { id: 'sandbag', label: 'Sandbag', emoji: '🎒' },
+  { id: 'kleine_zandzakken', label: '2 kleine zandzakken', emoji: '🎒' },
   { id: 'resistance_bands', label: 'Resistance bands', emoji: '🔴' },
   { id: 'mini_bands', label: 'Mini-bands', emoji: '🔵' },
   { id: 'dobbelstenen', label: 'Dobbelstenen', emoji: '🎲' },

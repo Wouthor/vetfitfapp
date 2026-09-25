@@ -1,0 +1,4 @@
+# Grote bronbestanden die niet mee hoeven naar Vercel
+/bootcraft-app-data
+/downloads
+/BootCraft-*.zip

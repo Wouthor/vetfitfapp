@@ -18,6 +18,7 @@ export default function GeneratePage() {
   const [equipment, setEquipment] = useState<string[]>([])
   const [chatfit, setChatfit] = useState('')
   const [useWebSearch, setUseWebSearch] = useState(true)
+  const [useLibrary, setUseLibrary] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [workout, setWorkout] = useState<WorkoutContent | null>(null)
@@ -58,7 +59,7 @@ export default function GeneratePage() {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ duration, intensity, kneeFriendly, equipment, chatfit, useWebSearch }),
+      body: JSON.stringify({ duration, intensity, kneeFriendly, equipment, chatfit, useWebSearch, useLibrary }),
     })
 
     const data = await res.json()
@@ -141,6 +142,20 @@ export default function GeneratePage() {
 
         <EquipmentPicker selected={equipment} onChange={saveEquipment} />
         <ChatFitInput value={chatfit} onChange={setChatfit} />
+
+        <button
+          onClick={() => setUseLibrary(!useLibrary)}
+          className={`toggle-row ${useLibrary ? 'border-ink bg-mint' : 'border-line bg-surface hover:border-ink'}`}
+          aria-pressed={useLibrary}
+        >
+          <span>
+            <span className="block font-label font-bold text-sm uppercase tracking-wider">Bibliotheek als bron</span>
+            <span className="block text-xs text-muted mt-0.5">Bouwt de training op uit passende BootCraft-trainingen</span>
+          </span>
+          <span className={`toggle-box ${useLibrary ? 'bg-ink border-ink text-paper' : 'border-line'}`}>
+            {useLibrary ? '✓' : ''}
+          </span>
+        </button>
 
         <button
           onClick={() => setUseWebSearch(!useWebSearch)}

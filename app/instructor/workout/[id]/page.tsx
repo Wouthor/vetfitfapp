@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import WorkoutDisplay from '@/components/WorkoutDisplay'
 import WorkoutEditToggle from '@/components/WorkoutEditToggle'
 import PDFExportButton from '@/components/PDFExportButton'
@@ -33,6 +34,11 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
   ])
 
   if (!workout) notFound()
+
+  const sourceIds: string[] = (workout as GeneratedWorkout).source_library_ids ?? []
+  const { data: sources } = sourceIds.length
+    ? await supabase.from('library_workouts').select('id, title').in('id', sourceIds)
+    : { data: [] as { id: string; title: string }[] }
 
   const w = workout as GeneratedWorkout
   const participants = signups?.map((s: any) => s.profiles?.name).filter(Boolean) ?? []
@@ -95,6 +101,19 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
                   <p className="text-sm text-muted italic mt-0.5">&ldquo;{r.comment}&rdquo;</p>
                 )}
               </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {sources && sources.length > 0 && (
+        <div>
+          <p className="sport-label mb-1.5">Gebaseerd op uit de bibliotheek</p>
+          <div className="flex flex-wrap -m-1">
+            {sources.map((src) => (
+              <Link key={src.id} href={`/instructor/bibliotheek/${src.id}`} className="m-1 text-sm bg-surface border border-line hover:border-ink px-2.5 py-1 rounded-sm transition-colors">
+                {src.title} →
+              </Link>
             ))}
           </div>
         </div>

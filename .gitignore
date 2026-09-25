@@ -32,3 +32,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Trainingsbibliotheek van BootCraft (betaalde bron): nooit in de openbare repository
+/bootcraft-app-data/
+/downloads/
+/BootCraft-*.zip
