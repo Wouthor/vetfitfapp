@@ -57,7 +57,7 @@ export async function POST() {
           rawText = await extractTextFromDocx(buffer)
         }
 
-        const { error: insertError } = await supabase.from('source_workouts').insert({
+        const { error: insertError } = await adminSupabase.from('source_workouts').insert({
           drive_file_id: file.id,
           file_name: file.name,
           raw_text: rawText,

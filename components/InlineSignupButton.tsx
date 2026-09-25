@@ -32,15 +32,15 @@ export default function InlineSignupButton({ workoutId, isSignedUp: initial, cou
     <button
       onClick={handleToggle}
       disabled={loading}
-      className={`mt-2 w-full py-2 rounded-xl text-sm font-semibold transition-colors border ${
+      className={`w-full py-2.5 rounded-sm font-label font-bold text-sm uppercase tracking-wider transition-colors border-2 ${
         isSignedUp
-          ? 'bg-magenta-900/50 border-magenta-500 text-magenta-400 hover:bg-magenta-900/80'
-          : 'bg-void-input border-void-border text-[#ff99ff] hover:border-magenta-500 hover:text-magenta-400'
+          ? 'bg-ink border-ink text-paper hover:bg-ink-soft'
+          : 'bg-transparent border-ink text-ink hover:bg-sunken'
       }`}
     >
-      {loading ? '...' : isSignedUp
-        ? `✓ Jij doet mee${count > 1 ? ` · ${count} deelnemers` : ''}`
-        : `🏋️ Ik doe mee${count > 0 ? ` · ${count} doen al mee` : ''}`
+      {loading ? 'Bezig…' : isSignedUp
+        ? `✓ Je doet mee${count > 1 ? ` · ${count} deelnemers` : ''}`
+        : `Ik doe mee${count > 0 ? ` · ${count} al aangemeld` : ''}`
       }
     </button>
   )

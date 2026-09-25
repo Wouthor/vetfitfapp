@@ -6,9 +6,12 @@ import type { WorkoutContent } from '@/lib/types'
 interface PDFExportButtonProps {
   workout: WorkoutContent
   title: string
+  duration?: number
+  intensity?: string
+  showKnee?: boolean
 }
 
-export default function PDFExportButton({ workout, title }: PDFExportButtonProps) {
+export default function PDFExportButton({ workout, title, duration, intensity, showKnee = true }: PDFExportButtonProps) {
   const [loading, setLoading] = useState(false)
 
   async function handleExport() {
@@ -17,7 +20,7 @@ export default function PDFExportButton({ workout, title }: PDFExportButtonProps
       const res = await fetch('/api/pdf', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workout, title }),
+        body: JSON.stringify({ workout, title, duration, intensity, showKnee }),
       })
 
       if (!res.ok) throw new Error('PDF generatie mislukt')
@@ -41,15 +44,15 @@ export default function PDFExportButton({ workout, title }: PDFExportButtonProps
     <button
       onClick={handleExport}
       disabled={loading}
-      className="btn-secondary flex items-center space-x-2 justify-center"
+      className="btn-secondary flex-1 flex items-center justify-center"
     >
       {loading ? (
         <>
-          <span className="animate-spin">⟳</span> PDF maken...
+          PDF maken…
         </>
       ) : (
         <>
-          <span>📄</span> Exporteer PDF
+          PDF downloaden
         </>
       )}
     </button>

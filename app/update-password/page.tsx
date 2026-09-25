@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import Image from 'next/image'
+import AuthShell from '@/components/AuthShell'
 
 export default function UpdatePasswordPage() {
   const [password, setPassword] = useState('')
@@ -41,49 +41,41 @@ export default function UpdatePasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-void px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
-            <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
-          </div>
-          <h1 className="text-3xl font-bold text-white">Nieuw wachtwoord</h1>
-          <p className="text-[#4a5e8a] mt-1">Kies een nieuw wachtwoord</p>
-        </div>
+    <AuthShell title="Nieuw wachtwoord" subtitle="Kies een nieuw wachtwoord voor je account.">
 
         {success ? (
-          <div className="bg-green-900/30 border border-green-800 rounded-xl px-4 py-4 text-green-400 text-center">
+          <div className="bg-green-50 border border-green-700 rounded-sm px-4 py-4 text-moss text-center">
             <p className="font-semibold">Wachtwoord gewijzigd!</p>
             <p className="text-sm mt-1">Je wordt doorgestuurd naar inloggen...</p>
           </div>
         ) : (
           <form onSubmit={handleUpdate} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">Nieuw wachtwoord</label>
+              <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">Nieuw wachtwoord</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Minimaal 6 tekens"
                 required
-                className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+                className="input"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">Herhaal wachtwoord</label>
+              <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">Herhaal wachtwoord</label>
               <input
                 type="password"
                 value={confirm}
                 onChange={(e) => setConfirm(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+                className="input"
               />
             </div>
 
             {error && (
-              <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-400 text-sm">
+              <div className="bg-red-50 border border-red-300 rounded-sm px-4 py-3 text-red-700 text-sm">
                 {error}
               </div>
             )}
@@ -93,7 +85,6 @@ export default function UpdatePasswordPage() {
             </button>
           </form>
         )}
-      </div>
-    </div>
+    </AuthShell>
   )
 }

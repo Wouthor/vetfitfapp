@@ -8,12 +8,9 @@ interface ChatFitInputProps {
 export default function ChatFitInput({ value, onChange }: ChatFitInputProps) {
   return (
     <div>
-      <div className="flex items-center space-x-2 mb-2">
-        <span className="text-lg">💬</span>
-        <label className="text-sm font-medium text-gray-300">
-          ChatFit <span className="text-gray-500 font-normal">— optioneel</span>
-        </label>
-      </div>
+      <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-2">
+        Extra wensen <span className="normal-case tracking-normal font-normal text-faint">(optioneel)</span>
+      </label>
       <textarea
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -21,10 +18,9 @@ export default function ChatFitInput({ value, onChange }: ChatFitInputProps) {
         rows={3}
         maxLength={500}
         className="input resize-none text-sm leading-relaxed"
-        style={{ backgroundColor: '#1f2937', borderColor: '#374151', color: 'white' }}
       />
       {value.length > 0 && (
-        <p className="text-xs text-gray-500 mt-1 text-right">{value.length}/500</p>
+        <p className="text-xs text-muted mt-1 text-right">{value.length}/500</p>
       )}
     </div>
   )

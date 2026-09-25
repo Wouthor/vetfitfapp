@@ -16,29 +16,37 @@ export default function CompleteButton({ workoutId, completedAt }: CompleteButto
 
   async function handleComplete() {
     setLoading(true)
-    await fetch(`/api/workouts/${workoutId}/complete`, { method: 'POST' })
-    const now = new Date().toISOString()
-    setDone(true)
-    setDate(now)
+    const res = await fetch(`/api/workouts/${workoutId}/complete`, { method: 'POST' })
     setLoading(false)
+    if (!res.ok) return
+    setDone(true)
+    setDate(new Date().toISOString())
+    router.refresh()
+  }
+
+  async function handleUndo() {
+    setLoading(true)
+    const res = await fetch(`/api/workouts/${workoutId}/complete`, { method: 'DELETE' })
+    setLoading(false)
+    if (!res.ok) return
+    setDone(false)
+    setDate(null)
     router.refresh()
   }
 
   if (done && date) {
     return (
-      <div className="flex items-center space-x-2 py-3 px-4 bg-void-card border border-green-700 rounded-xl">
-        <span className="text-green-400">✓</span>
+      <div className="flex items-center py-3 px-4 bg-mint rounded-sm">
         <div>
-          <p className="text-sm font-semibold text-green-400">Training gedaan</p>
-          <p className="text-xs text-green-600">
-            {new Date(date).toLocaleDateString('nl-NL', {
-              day: '2-digit', month: '2-digit', year: 'numeric'
-            })}
+          <p className="font-label font-bold text-sm uppercase tracking-wider text-moss">Training gedaan</p>
+          <p className="text-xs text-moss">
+            {new Date(date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
         <button
-          onClick={() => { setDone(false); setDate(null) }}
-          className="ml-auto text-xs text-gray-500 hover:text-gray-400"
+          onClick={handleUndo}
+          disabled={loading}
+          className="ml-auto font-label font-bold text-xs uppercase tracking-widest text-moss hover:text-ink disabled:opacity-50"
         >
           Ongedaan maken
         </button>
@@ -50,9 +58,9 @@ export default function CompleteButton({ workoutId, completedAt }: CompleteButto
     <button
       onClick={handleComplete}
       disabled={loading}
-      className="w-full flex items-center justify-center space-x-2 py-3 px-4 bg-void-card border border-green-700 hover:bg-green-900/40 text-green-400 font-semibold rounded-xl transition-colors"
+      className="btn-secondary w-full"
     >
-      {loading ? 'Bezig...' : <><span>✓</span> Training gedaan</>}
+      {loading ? 'Bezig…' : 'Markeer als gedaan'}
     </button>
   )
 }

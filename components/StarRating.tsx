@@ -61,15 +61,15 @@ export default function StarRating({ workoutId, initialRating, initialComment }:
   const display = hovered ?? rating ?? 0
 
   const ratingLabel =
-    rating === 5 ? 'Geweldig! 🔥' :
-    rating === 4 ? 'Top training 💪' :
-    rating === 3 ? 'Goed gedaan 👍' :
-    rating === 2 ? 'Kon beter 😅' :
-    rating === 1 ? 'Zwaar... 😰' : ''
+    rating === 5 ? 'Geweldig' :
+    rating === 4 ? 'Top training' :
+    rating === 3 ? 'Goed gedaan' :
+    rating === 2 ? 'Kon beter' :
+    rating === 1 ? 'Zwaar' : ''
 
   return (
     <div className="card space-y-3">
-      <p className="text-sm font-semibold text-white">Beoordeel deze training</p>
+      <p className="text-sm font-semibold text-ink">Beoordeel deze training</p>
 
       {/* Sterren */}
       <div className="flex items-center space-x-1">
@@ -82,15 +82,15 @@ export default function StarRating({ workoutId, initialRating, initialComment }:
             disabled={savingRating}
             className="text-3xl transition-transform hover:scale-110 disabled:opacity-50"
           >
-            <span className={star <= display ? 'text-neon-400' : 'text-void-input'}>★</span>
+            <span className={star <= display ? 'text-gold' : 'text-line'}>★</span>
           </button>
         ))}
 
         {/* Status naast de sterren */}
         <span className="ml-2 text-xs">
-          {savingRating && <span className="text-[#ff99ff] animate-pulse">Opslaan...</span>}
-          {!savingRating && ratingJustSaved && <span className="text-green-400">✓ Opgeslagen</span>}
-          {!savingRating && !ratingJustSaved && rating && <span className="text-[#ff99ff]">{ratingLabel}</span>}
+          {savingRating && <span className="text-muted animate-pulse">Opslaan...</span>}
+          {!savingRating && ratingJustSaved && <span className="text-moss">✓ Opgeslagen</span>}
+          {!savingRating && !ratingJustSaved && rating && <span className="text-muted">{ratingLabel}</span>}
         </span>
       </div>
 
@@ -103,12 +103,12 @@ export default function StarRating({ workoutId, initialRating, initialComment }:
             placeholder="Optioneel: bijv. te zwaar, te veel rennen, leuke oefening..."
             maxLength={300}
             rows={2}
-            className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] text-sm focus:outline-none focus:ring-2 focus:ring-magenta-500 resize-none"
+            className="input text-sm resize-none"
           />
           <p className="text-xs text-right">
-            {savingComment && <span className="text-[#ff99ff] animate-pulse">Opslaan...</span>}
-            {!savingComment && commentSaved && <span className="text-green-400">✓ Opgeslagen</span>}
-            {!savingComment && !commentSaved && comment && <span className="text-[#ff99ff] opacity-50">Wordt opgeslagen...</span>}
+            {savingComment && <span className="text-muted animate-pulse">Opslaan...</span>}
+            {!savingComment && commentSaved && <span className="text-moss">✓ Opgeslagen</span>}
+            {!savingComment && !commentSaved && comment && <span className="text-muted opacity-50">Wordt opgeslagen...</span>}
           </p>
         </div>
       )}

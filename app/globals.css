@@ -8,35 +8,105 @@
   }
 
   body {
-    background-color: #ff00ff;
-    color: #ffffff;
+    background-color: #f3f1ec;
+    color: #12261e;
+  }
+
+  h1, h2 {
+    font-family: var(--font-display), Impact, sans-serif;
+    font-weight: 400;
+    text-transform: uppercase;
+    line-height: 0.95;
+    letter-spacing: 0.2px;
+  }
+
+  h3 {
+    font-family: var(--font-label), 'Arial Narrow', sans-serif;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+  }
+
+  :focus-visible {
+    outline: 2px solid #12261e;
+    outline-offset: 2px;
   }
 }
 
 @layer components {
-  /* Primaire knop: neongeel met donkere tekst — leesbaar op magenta bg */
+  /* Knoppen: blokvormig, labelletter in kapitalen */
   .btn-primary {
-    @apply bg-neon-400 hover:bg-neon-300 active:bg-neon-500 text-[#1a1a00] font-bold py-3 px-6 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply bg-ink hover:bg-ink-soft active:bg-neon-500 text-paper font-label font-bold uppercase tracking-wider py-3.5 px-6 rounded-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-secondary {
-    @apply bg-void-card hover:bg-void-input text-white font-semibold py-3 px-6 rounded-xl transition-colors border border-void-border;
+    @apply bg-transparent hover:bg-sunken text-ink font-label font-bold uppercase tracking-wider py-3.5 px-6 rounded-sm transition-colors border-2 border-ink;
   }
 
   .btn-ghost {
-    @apply text-[#ff99ff] hover:text-white font-medium py-2 px-4 rounded-lg transition-colors;
+    @apply text-muted hover:text-ink font-label font-bold uppercase tracking-wider text-sm py-2 px-4 rounded-sm transition-colors;
   }
 
-  /* Kaarten zijn donker zodat ze afsteken tegen de magenta achtergrond */
   .card {
-    @apply bg-void-card rounded-2xl shadow-lg border border-void-border p-5;
+    @apply bg-surface rounded-sm border border-line p-5;
   }
 
   .input {
-    @apply w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#ff66ff] focus:outline-none focus:ring-2 focus:ring-neon-400 focus:border-transparent transition;
+    @apply w-full bg-surface border border-line rounded-sm px-4 py-3 text-ink placeholder-faint focus:outline-none focus:border-ink focus:ring-1 focus:ring-ink transition;
   }
 
   .section-tag {
-    @apply inline-block text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full;
+    @apply inline-block font-label text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm;
+  }
+
+  /* Trainingskaart: donkergroene kaderlijn links, zoals een wedstrijdprogramma */
+  .card-sport {
+    @apply bg-surface rounded-sm border border-line overflow-hidden flex;
+  }
+
+  .card-sport-bar {
+    @apply w-1.5 bg-ink flex-shrink-0;
+  }
+
+  .card-sport-body {
+    @apply flex-1 p-4 min-w-0;
+  }
+
+  .sport-label {
+    @apply font-label font-bold text-xs uppercase tracking-widest text-muted;
+  }
+
+  .sport-number {
+    @apply font-display leading-none text-ink;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .badge-live {
+    @apply font-label text-xs font-bold px-2 py-0.5 rounded-sm bg-ink text-paper uppercase tracking-wider flex-shrink-0;
+  }
+
+  .badge-done {
+    @apply font-label text-xs font-bold px-2 py-0.5 rounded-sm bg-mint text-moss uppercase tracking-wider flex-shrink-0;
+  }
+
+  .badge-draft {
+    @apply font-label text-xs font-bold px-2 py-0.5 rounded-sm bg-transparent text-muted uppercase tracking-wider border border-line flex-shrink-0;
+  }
+
+  /* Keuzeknoppen (duur, intensiteit) en aan/uit-rijen op de genereerschermen */
+  .opt {
+    @apply py-3 rounded-sm font-label font-bold uppercase tracking-wider border-2 border-line bg-surface text-muted hover:border-ink hover:text-ink transition-colors;
+  }
+
+  .opt-on {
+    @apply py-3 rounded-sm font-label font-bold uppercase tracking-wider border-2 border-ink bg-ink text-paper;
+  }
+
+  .toggle-row {
+    @apply w-full flex items-center justify-between py-3 px-4 rounded-sm border-2 text-left transition-colors;
+  }
+
+  .toggle-box {
+    @apply w-6 h-6 rounded-sm border-2 flex items-center justify-center text-sm flex-shrink-0 ml-3;
   }
 }

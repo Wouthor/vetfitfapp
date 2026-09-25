@@ -10,6 +10,7 @@ export default function SyncButton() {
   const router = useRouter()
 
   async function handleSync(reset = false) {
+    if (reset && !window.confirm('Alle opgehaalde Drive-trainingen wissen en opnieuw ophalen?')) return
     setLoading(true)
     setError('')
     setResult(null)
@@ -38,38 +39,38 @@ export default function SyncButton() {
   }
 
   return (
-    <div className="space-y-2">
-      <div className="flex space-x-2">
+    <div className="border-b border-line">
+      <div className="flex items-center justify-between py-3.5">
         <button
           onClick={() => handleSync(false)}
           disabled={loading}
-          className="btn-secondary flex-1 flex items-center justify-center space-x-2"
+          className="font-label font-bold text-sm uppercase tracking-wider text-left disabled:opacity-50"
         >
-          {loading ? <><span className="animate-spin">⟳</span> Bezig...</> : <><span>🔄</span> Drive synchroniseren</>}
+          {loading ? 'Bezig met ophalen…' : 'Drive-trainingen ophalen'}
         </button>
         <button
           onClick={() => handleSync(true)}
           disabled={loading}
-          className="bg-void-input hover:bg-void-border text-[#4a5e8a] hover:text-white px-4 py-3 rounded-xl text-sm font-medium transition-colors border border-void-border"
-          title="Alles wissen en opnieuw synchroniseren"
+          className="font-label font-bold text-xs uppercase tracking-widest text-muted hover:text-red-700 transition-colors disabled:opacity-50"
+          title="Alles wissen en opnieuw ophalen"
         >
-          ↺ Reset
+          Opnieuw
         </button>
       </div>
 
       {result && (
-        <div className="bg-green-900/30 border border-green-800 rounded-xl px-4 py-3 text-green-400 text-sm">
-          Klaar! {result.synced} nieuwe trainingen opgehaald, {result.skipped} al aanwezig ({result.total} totaal in Drive).
+        <div className="bg-mint px-3 py-2.5 mb-3 text-moss text-sm rounded-sm">
+          {result.synced} nieuwe trainingen opgehaald, {result.skipped} waren er al ({result.total} in Drive).
           {result.errors.length > 0 && (
-            <div className="mt-1 text-xs text-yellow-400">
-              {result.errors.length} fout(en): {result.errors[0]}
+            <div className="mt-1 text-xs text-red-700">
+              {result.errors.length} {result.errors.length === 1 ? 'bestand' : 'bestanden'} niet gelukt: {result.errors[0]}
             </div>
           )}
         </div>
       )}
 
       {error && (
-        <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-400 text-sm">
+        <div className="bg-red-50 border border-red-300 rounded-sm px-3 py-2.5 mb-3 text-red-700 text-sm">
           {error}
         </div>
       )}

@@ -91,9 +91,6 @@ function pingEnd() {
   playBellSynth(1.0)
 }
 
-const RADIUS = 54
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS
-
 export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps) {
   const totalRounds = timer.rounds ?? 1
   const workSeconds = timer.work_seconds
@@ -185,37 +182,28 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
     ? `${mins}:${secs.toString().padStart(2, '0')}`
     : `${secs}`
 
-  const strokeColor =
-    phase === 'rest' ? '#00ffff' :
-    phase === 'done' ? '#00ff88' :
-    '#ff00ff'
-
-  const bgColor =
-    phase === 'rest' ? 'border-electric-400/40 bg-electric-950/60' :
-    phase === 'done' ? 'border-green-500/40 bg-green-950/40' :
-    'border-magenta-500/40 bg-magenta-950/60'
-
+  const isWork = phase === 'work'
   const phaseLabel =
-    phase === 'work' ? 'WERK' :
-    phase === 'rest' ? 'RUST' :
-    phase === 'done' ? 'KLAAR' : ''
+    phase === 'work' ? 'Werk' :
+    phase === 'rest' ? 'Rust' :
+    phase === 'done' ? 'Klaar' : ''
 
   // ── IDLE ────────────────────────────────────────────────────────────
   if (phase === 'idle') {
     return (
       <button
         onClick={handleStart}
-        className="w-full flex items-center justify-center space-x-3 py-4 rounded-2xl border border-magenta-500/60 bg-magenta-950/40 hover:bg-magenta-900/60 transition-colors"
+        className="w-full flex items-center justify-between px-4 py-3.5 rounded-sm bg-ink text-paper hover:bg-ink-soft transition-colors"
       >
-        <span className="text-2xl">▶</span>
-        <div className="text-left">
-          <p className="font-bold text-white text-sm">Start timer</p>
-          <p className="text-xs text-magenta-300">
+        <span className="text-left">
+          <span className="block font-label font-bold text-sm uppercase tracking-wider">Start timer</span>
+          <span className="block text-xs text-sage mt-0.5">
             {isInterval
-              ? `${totalRounds}× ${workSeconds}s werk / ${restSeconds}s rust`
+              ? `${totalRounds} rondes · ${workSeconds}s werk / ${restSeconds}s rust`
               : `${workSeconds} seconden`}
-          </p>
-        </div>
+          </span>
+        </span>
+        <span aria-hidden="true" className="w-9 h-9 rounded-full bg-paper text-ink flex items-center justify-center text-sm pl-0.5">▶</span>
       </button>
     )
   }
@@ -223,20 +211,13 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   // ── DONE ────────────────────────────────────────────────────────────
   if (phase === 'done') {
     return (
-      <div className="flex flex-col items-center space-y-3 py-4 rounded-2xl border border-green-500/40 bg-green-950/40">
-        <p className="text-4xl">✓</p>
-        <p className="font-bold text-green-400">Oefening klaar!</p>
-        <div className="flex space-x-3">
-          <button
-            onClick={handleReset}
-            className="px-4 py-2 rounded-xl border border-void-border text-[#ff99ff] text-sm"
-          >
+      <div className="rounded-sm border-2 border-moss bg-mint px-4 py-4">
+        <p className="font-display text-3xl uppercase text-moss leading-none">Oefening klaar</p>
+        <div className="flex space-x-2 mt-4">
+          <button onClick={handleReset} className="btn-secondary flex-1 py-2.5 text-sm">
             Opnieuw
           </button>
-          <button
-            onClick={onComplete}
-            className="px-5 py-2 rounded-xl bg-magenta-500 hover:bg-magenta-600 text-white font-bold text-sm transition-colors"
-          >
+          <button onClick={onComplete} className="btn-primary flex-1 py-2.5 text-sm">
             Volgende →
           </button>
         </div>
@@ -246,56 +227,56 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
 
   // ── ACTIVE TIMER ────────────────────────────────────────────────────
   return (
-    <div className={`flex flex-col items-center space-y-3 py-5 rounded-2xl border ${bgColor} transition-colors`}>
-      {isInterval && (
-        <div className="flex items-center space-x-2">
-          <span className="text-xs font-bold text-[#ff99ff] uppercase tracking-wide">
-            Ronde {currentRound} / {totalRounds}
+    <div
+      className={`rounded-sm px-4 pt-3 pb-4 transition-colors ${isWork ? 'bg-ink text-paper' : 'bg-mint text-ink'}`}
+      role="timer"
+      aria-live="off"
+    >
+      <div className="flex items-center justify-between">
+        <span className={`font-label font-bold text-xs uppercase tracking-widest ${isWork ? 'text-sage' : 'text-moss'}`}>
+          {phaseLabel}{paused ? ' · gepauzeerd' : ''}
+        </span>
+        {isInterval && (
+          <span className={`font-label font-bold text-xs uppercase tracking-widest ${isWork ? 'text-sage' : 'text-moss'}`}>
+            Ronde {currentRound}/{totalRounds}
           </span>
-          <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${
-            phase === 'rest' ? 'bg-electric-900 text-electric-400' : 'bg-magenta-900 text-magenta-400'
-          }`}>
-            {phaseLabel}
-          </span>
+        )}
+      </div>
+
+      <p className="font-display text-8xl leading-none text-center mt-2 mb-3" style={{ fontVariantNumeric: 'tabular-nums' }}>
+        {timeDisplay}
+      </p>
+
+      <div className={`h-1.5 w-full ${isWork ? 'bg-ink-soft' : 'bg-paper'}`}>
+        <div
+          className={`h-full ${isWork ? 'bg-paper' : 'bg-moss'}`}
+          style={{ width: `${Math.max(0, Math.min(1, progress)) * 100}%`, transition: 'width 0.9s linear' }}
+        />
+      </div>
+
+      {isInterval && totalRounds > 1 && (
+        <div className="grid mt-2" style={{ gridTemplateColumns: `repeat(${totalRounds}, minmax(0, 1fr))`, gridColumnGap: '4px' }}>
+          {Array.from({ length: totalRounds }).map((_, i) => (
+            <span
+              key={i}
+              className={`h-1 ${i < currentRound - 1 ? (isWork ? 'bg-paper' : 'bg-moss') : i === currentRound - 1 ? (isWork ? 'bg-sage' : 'bg-sage') : (isWork ? 'bg-ink-soft' : 'bg-paper')}`}
+            />
+          ))}
         </div>
       )}
 
-      <div className="relative w-36 h-36">
-        <svg viewBox="0 0 120 120" className="w-full h-full -rotate-90">
-          <circle cx="60" cy="60" r={RADIUS} fill="none" stroke="#1a001a" strokeWidth="10" />
-          <circle
-            cx="60" cy="60" r={RADIUS}
-            fill="none"
-            stroke={strokeColor}
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeDasharray={CIRCUMFERENCE}
-            strokeDashoffset={CIRCUMFERENCE * (1 - progress)}
-            style={{ transition: 'stroke-dashoffset 0.5s linear, stroke 0.3s' }}
-          />
-        </svg>
-        <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-4xl font-bold text-white tabular-nums">{timeDisplay}</span>
-          {!isInterval && (
-            <span className="text-xs text-[#ff99ff] mt-0.5">{phaseLabel}</span>
-          )}
-        </div>
-      </div>
-
-      <div className="flex space-x-4 items-center">
+      <div className="flex items-center justify-between mt-4">
         <button
           onClick={handlePause}
-          className={`px-5 py-2 rounded-xl border font-semibold text-sm transition-colors ${
-            paused
-              ? 'border-magenta-500 bg-magenta-900/40 text-magenta-400 hover:bg-magenta-900/60'
-              : 'border-void-border bg-void-input text-white hover:bg-void-border'
+          className={`font-label font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-sm transition-colors ${
+            isWork ? 'bg-paper text-ink hover:bg-sage' : 'bg-ink text-paper hover:bg-ink-soft'
           }`}
         >
-          {paused ? '▶ Hervat' : '⏸ Pauze'}
+          {paused ? 'Hervat' : 'Pauze'}
         </button>
         <button
           onClick={handleReset}
-          className="text-xs text-[#ff99ff] opacity-60 hover:opacity-100 transition-opacity"
+          className={`font-label font-bold text-xs uppercase tracking-widest transition-colors ${isWork ? 'text-sage hover:text-paper' : 'text-moss hover:text-ink'}`}
         >
           Stoppen
         </button>

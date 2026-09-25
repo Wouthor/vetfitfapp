@@ -1,5 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
+import Image from 'next/image'
+import { splitTitle, formatWorkoutDate } from '@/lib/format'
 import InlineSignupButton from '@/components/InlineSignupButton'
 
 export default async function AthletePage() {
@@ -39,52 +41,62 @@ export default async function AthletePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-white">Trainingen</h1>
-          <p className="text-[#ff99ff] mt-1">Gepubliceerde trainingen van de instructor</p>
-        </div>
-        <div className="flex space-x-2">
-          <Link href="/athlete/profile" className="btn-ghost text-sm px-3 py-2">
-            Mijn profiel
-          </Link>
-          <Link href="/athlete/generate" className="btn-primary text-sm px-4 py-2">
-            Maak zelf een training
-          </Link>
+      <div className="relative -mx-4 -mt-6 h-44 overflow-hidden bg-ink">
+        <Image
+          src="/photos/02-oudere-sporters/03-yoga-in-het-park.jpg"
+          alt="Groep sporters traint samen in het park"
+          fill
+          priority
+          sizes="(min-width: 672px) 672px, 100vw"
+          className="object-cover object-center"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10" />
+        <div className="absolute left-0 right-0 bottom-0 px-4 pb-4">
+          <p className="font-label font-bold text-xs uppercase tracking-widest text-sage">Van je instructeur</p>
+          <h1 className="text-5xl text-paper mt-1">Trainingen</h1>
         </div>
       </div>
 
+      <div className="grid grid-cols-2 gap-2">
+        <Link href="/athlete/generate" className="btn-primary text-center text-sm px-3">
+          Zelf een training maken
+        </Link>
+        <Link href="/athlete/profile" className="btn-secondary text-center text-sm px-3">
+          Mijn profiel
+        </Link>
+      </div>
+
       {upcoming.length === 0 && done.length === 0 && (
-        <div className="card text-center py-10">
-          <p className="text-[#ff99ff]">Nog geen trainingen gepubliceerd.</p>
+        <div className="border-2 border-dashed border-line px-5 py-10 text-center">
+          <p className="font-display text-2xl uppercase">Nog geen trainingen</p>
+          <p className="text-muted text-sm mt-1">Zodra je instructeur een training publiceert, zie je hem hier.</p>
         </div>
       )}
 
       {upcoming.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold mb-3 text-white">Aankomend</h2>
+          <h2 className="text-3xl text-ink mb-3">Aankomend</h2>
           <div className="space-y-2">
             {upcoming.map((w) => {
               const count = countByWorkout[w.id] ?? 0
               const iJoin = signedUpIds.has(w.id)
               return (
-                <div key={w.id} className="card hover:border-magenta-500 transition-colors">
-                  <Link href={`/athlete/workout/${w.id}`} className="block">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-white">{w.title ?? 'Training zonder titel'}</p>
-                        <p className="text-sm text-[#ff99ff] mt-0.5">
-                          {w.duration} min · {w.intensity}
-                          {w.knee_friendly ? ' · knie-vriendelijk' : ''}
-                        </p>
-                        <p className="text-xs text-[#ff99ff] mt-0.5 opacity-60">
-                          {new Date(w.created_at).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                <div key={w.id} className="card-sport hover:border-ink transition-colors">
+                  <div className="card-sport-bar" />
+                  <div className="card-sport-body">
+                    <Link href={`/athlete/workout/${w.id}`} className="flex items-start justify-between">
+                      <div className="min-w-0 pr-3">
+                        <p className="font-display text-xl leading-tight uppercase tracking-wide">{splitTitle(w.title).name}</p>
+                        <p className="sport-label mt-1">
+                          {formatWorkoutDate(w.created_at)} · {w.duration} min · {w.intensity}{w.knee_friendly ? ' · knievriendelijk' : ''}
                         </p>
                       </div>
-                      <span className="text-xs text-[#ff99ff] opacity-60 ml-2">→</span>
+                      <span aria-hidden="true" className="text-muted flex-shrink-0">→</span>
+                    </Link>
+                    <div className="mt-3">
+                      <InlineSignupButton workoutId={w.id} isSignedUp={iJoin} count={count} />
                     </div>
-                  </Link>
-                  <InlineSignupButton workoutId={w.id} isSignedUp={iJoin} count={count} />
+                  </div>
                 </div>
               )
             })}
@@ -94,28 +106,21 @@ export default async function AthletePage() {
 
       {done.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold mb-3 text-white">Gedaan</h2>
-          <div className="space-y-2">
+          <h2 className="text-3xl text-ink mb-3">Gedaan</h2>
+          <div className="border-t border-ink">
             {done.map((w) => (
               <Link
                 key={w.id}
                 href={`/athlete/workout/${w.id}`}
-                className="block card hover:border-electric-500 transition-colors opacity-75"
+                className="flex items-center justify-between py-3 border-b border-line group"
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium text-white">{w.title ?? 'Training zonder titel'}</p>
-                    <p className="text-sm text-[#ff99ff] mt-0.5">
-                      {w.duration} min · {w.intensity}
-                    </p>
-                    <p className="text-xs text-electric-400 mt-0.5">
-                      ✓ Gedaan op {new Date(w.completed_at).toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: 'numeric' })}
-                    </p>
-                  </div>
-                  <span className="text-xs font-semibold px-2 py-1 rounded-full bg-electric-900 text-electric-400">
-                    Gedaan
-                  </span>
+                <div className="min-w-0 pr-3">
+                  <p className="font-bold leading-tight truncate">{splitTitle(w.title).name}</p>
+                  <p className="sport-label mt-0.5">
+                    {w.duration} min · {new Date(w.completed_at).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short' })}
+                  </p>
                 </div>
+                <span className="badge-done">Gedaan</span>
               </Link>
             ))}
           </div>

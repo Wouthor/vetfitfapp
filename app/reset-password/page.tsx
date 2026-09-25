@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
-import Image from 'next/image'
+import AuthShell from '@/components/AuthShell'
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('')
@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
     setError('')
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/update-password`,
+      redirectTo: `${window.location.origin}/api/auth/callback?next=/update-password`,
     })
 
     if (error) {
@@ -31,19 +31,11 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-void px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
-            <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
-          </div>
-          <h1 className="text-3xl font-bold text-white">Wachtwoord vergeten</h1>
-          <p className="text-[#4a5e8a] mt-1">We sturen je een resetlink</p>
-        </div>
+    <AuthShell title="Wachtwoord vergeten" subtitle="Vul je e-mailadres in, dan sturen we je een resetlink.">
 
         {sent ? (
           <div className="space-y-4">
-            <div className="bg-green-900/30 border border-green-800 rounded-xl px-4 py-4 text-green-400 text-center">
+            <div className="bg-green-50 border border-green-700 rounded-sm px-4 py-4 text-moss text-center">
               <p className="font-semibold">E-mail verstuurd!</p>
               <p className="text-sm mt-1">Check je inbox voor de resetlink.</p>
             </div>
@@ -54,19 +46,19 @@ export default function ResetPasswordPage() {
         ) : (
           <form onSubmit={handleReset} className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-[#7b8db8] mb-1.5">E-mailadres</label>
+              <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">E-mailadres</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="jouw@email.nl"
                 required
-                className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+                className="input"
               />
             </div>
 
             {error && (
-              <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-400 text-sm">
+              <div className="bg-red-50 border border-red-300 rounded-sm px-4 py-3 text-red-700 text-sm">
                 {error}
               </div>
             )}
@@ -75,12 +67,11 @@ export default function ResetPasswordPage() {
               {loading ? 'Bezig...' : 'Resetlink versturen'}
             </button>
 
-            <Link href="/login" className="block text-center text-gray-500 hover:text-[#7b8db8] text-sm transition-colors">
+            <Link href="/login" className="block text-center text-muted hover:text-ink text-sm transition-colors">
               Terug naar inloggen
             </Link>
           </form>
         )}
-      </div>
-    </div>
+    </AuthShell>
   )
 }

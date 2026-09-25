@@ -1,6 +1,10 @@
 const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['mammoth', 'googleapis', 'google-auth-library', '@react-pdf/renderer', '@anthropic-ai/sdk'],
+    // Lettertypen voor de PDF worden via een bestandspad geladen; zorg dat ze mee gaan naar Vercel
+    outputFileTracingIncludes: {
+      '/api/pdf': ['./node_modules/@fontsource/anton/files/*.woff', './node_modules/@fontsource/archivo/files/archivo-latin-*-normal.woff', './node_modules/@fontsource/archivo-narrow/files/archivo-narrow-latin-*-normal.woff'],
+    },
   },
 
   webpack: (config, { isServer }) => {

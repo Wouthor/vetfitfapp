@@ -2,14 +2,17 @@
 
 import { useState } from 'react'
 import WorkoutEditor from '@/components/WorkoutEditor'
-import type { WorkoutContent } from '@/lib/types'
+import type { WorkoutContent, Intensity } from '@/lib/types'
 
 interface WorkoutEditToggleProps {
   workoutId: string
   content: WorkoutContent
+  intensity?: Intensity
+  kneeFriendly?: boolean
+  equipment?: string[]
 }
 
-export default function WorkoutEditToggle({ workoutId, content }: WorkoutEditToggleProps) {
+export default function WorkoutEditToggle({ workoutId, content, intensity, kneeFriendly, equipment }: WorkoutEditToggleProps) {
   const [editMode, setEditMode] = useState(false)
 
   if (editMode) {
@@ -17,6 +20,9 @@ export default function WorkoutEditToggle({ workoutId, content }: WorkoutEditTog
       <WorkoutEditor
         workoutId={workoutId}
         initialContent={content}
+        intensity={intensity}
+        kneeFriendly={kneeFriendly}
+        equipment={equipment}
         onClose={() => setEditMode(false)}
       />
     )
@@ -25,9 +31,9 @@ export default function WorkoutEditToggle({ workoutId, content }: WorkoutEditTog
   return (
     <button
       onClick={() => setEditMode(true)}
-      className="btn-ghost text-sm"
+      className="btn-secondary w-full"
     >
-      ✏️ Bewerken
+      Training bewerken
     </button>
   )
 }

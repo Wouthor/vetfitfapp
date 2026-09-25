@@ -15,6 +15,7 @@ export async function POST(request: NextRequest) {
   const kneeFriendly = Boolean(body.kneeFriendly)
   const equipment = Array.isArray(body.equipment) ? body.equipment as string[] : []
   const chatfit = typeof body.chatfit === 'string' ? body.chatfit.slice(0, 500) : ''
+  const useWebSearch = Boolean(body.useWebSearch)
 
   if (![30, 45, 60].includes(duration)) {
     return NextResponse.json({ error: 'Ongeldige duur' }, { status: 400 })
@@ -39,9 +40,11 @@ export async function POST(request: NextRequest) {
     .map((w) => truncateForContext(w.raw_text!, 1000))
 
   try {
-    const content = await generateWorkout({ duration, intensity, kneeFriendly, exampleWorkouts, equipment, chatfit })
+    const { content, title: generatedTitle } = await generateWorkout({ duration, intensity, kneeFriendly, exampleWorkouts, equipment, chatfit, useWebSearch })
 
-    const title = `Training ${duration} min · ${intensity}`
+    const now = new Date()
+    const dateStr = now.toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })
+    const title = `${generatedTitle} — ${dateStr}`
 
     const { data: saved } = await adminSupabase
       .from('generated_workouts')

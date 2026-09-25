@@ -1,5 +1,10 @@
 import type { Metadata } from 'next'
+import { Anton, Archivo, Archivo_Narrow } from 'next/font/google'
 import './globals.css'
+
+const display = Anton({ subsets: ['latin'], weight: '400', variable: '--font-display', display: 'swap' })
+const body = Archivo({ subsets: ['latin'], weight: ['400', '500', '700'], variable: '--font-body', display: 'swap' })
+const label = Archivo_Narrow({ subsets: ['latin'], weight: ['500', '700'], variable: '--font-label', display: 'swap' })
 
 export const metadata: Metadata = {
   title: 'VetFitFapp',
@@ -8,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="nl" suppressHydrationWarning>
+    <html lang="nl" suppressHydrationWarning className={`${display.variable} ${body.variable} ${label.variable}`}>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
 {/* Polyfills voor iOS 12 — moet vóór alle andere scripts laden */}
@@ -39,7 +44,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }
         ` }} />
       </head>
-      <body className="min-h-screen antialiased">
+      <body className="min-h-screen antialiased bg-paper text-ink font-sans">
         {children}
       </body>
     </html>

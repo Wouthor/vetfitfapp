@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import AuthShell from '@/components/AuthShell'
 
 export default function RegisterPage() {
   const [name, setName] = useState('')
@@ -54,67 +54,59 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-void px-4">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
-            <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
-          </div>
-          <h1 className="text-3xl font-bold text-white">VetFitFapp</h1>
-          <p className="text-[#ffccff] mt-1">Maak een account aan</p>
-        </div>
+    <AuthShell title="Account aanmaken" subtitle="Meld je aan om mee te trainen.">
 
         <form onSubmit={handleRegister} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-1.5">Jouw naam</label>
+            <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">Jouw naam</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder="Voor- en achternaam"
               required
-              className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1.5">E-mailadres</label>
+            <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">E-mailadres</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="jouw@email.nl"
               required
-              className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1.5">Wachtwoord</label>
+            <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">Wachtwoord</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimaal 6 tekens"
               required
-              className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1.5">Herhaal wachtwoord</label>
+            <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">Herhaal wachtwoord</label>
             <input
               type="password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="input"
             />
           </div>
 
           {error && (
-            <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-400 text-sm">
+            <div className="bg-red-50 border border-red-300 rounded-sm px-4 py-3 text-red-700 text-sm">
               {error}
             </div>
           )}
@@ -124,11 +116,10 @@ export default function RegisterPage() {
           </button>
         </form>
 
-        <p className="text-center text-[#ffccff] text-sm mt-6">
+        <p className="text-center text-muted text-sm mt-6">
           Al een account?{' '}
-          <Link href="/login" className="text-neon-400 hover:text-neon-300">Inloggen</Link>
+          <Link href="/login" className="font-bold text-ink underline underline-offset-2">Inloggen</Link>
         </p>
-      </div>
-    </div>
+    </AuthShell>
   )
 }

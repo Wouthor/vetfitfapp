@@ -4,7 +4,7 @@ import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import Image from 'next/image'
+import AuthShell from '@/components/AuthShell'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -36,50 +36,41 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-void px-4 py-8">
-      <div className="w-full max-w-sm">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 overflow-hidden">
-            <Image src="/icon.png" alt="VetFitFapp" width={64} height={64} className="object-cover" />
-          </div>
-          <h1 className="text-3xl font-bold text-white">VetFitFapp</h1>
-          <p className="text-[#ffccff] mt-1">Log in om verder te gaan</p>
-        </div>
+    <AuthShell title="Inloggen" subtitle="Welkom terug. Log in om je trainingen te zien.">
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-white mb-1.5">E-mailadres</label>
+            <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">E-mailadres</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="jouw@email.nl"
               required
-              className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="input"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white mb-1.5">Wachtwoord</label>
+            <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-1.5">Wachtwoord</label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              className="w-full bg-void-input border border-void-border rounded-xl px-4 py-3 text-white placeholder-[#4a5e8a] focus:outline-none focus:ring-2 focus:ring-magenta-500"
+              className="input"
             />
           </div>
 
           {error && (
-            <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-400 text-sm">
+            <div className="bg-red-50 border border-red-300 rounded-sm px-4 py-3 text-red-700 text-sm">
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            onClick={function(e) { if (!loading) handleLogin(e as any) }}
             disabled={loading}
             className="btn-primary w-full text-center"
           >
@@ -90,15 +81,14 @@ export default function LoginPage() {
         <div className="mt-6 space-y-3 text-center">
           <Link
             href="/register"
-            className="block w-full py-3 px-6 border border-void-border hover:border-neon-400 text-[#ffccff] hover:text-neon-400 font-medium rounded-xl transition-colors text-sm bg-void-card"
+            className="btn-secondary w-full text-center block"
           >
-            Nog geen account? <span className="text-neon-400 font-semibold">Aanmelden</span>
+            Nog geen account? Aanmelden
           </Link>
-          <Link href="/reset-password" className="block text-sm text-[#ffccff] hover:text-white transition-colors">
+          <Link href="/reset-password" className="block text-sm text-muted hover:text-ink transition-colors">
             Wachtwoord vergeten?
           </Link>
         </div>
-      </div>
-    </div>
+    </AuthShell>
   )
 }

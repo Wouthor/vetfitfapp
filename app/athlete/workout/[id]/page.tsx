@@ -2,9 +2,9 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import WorkoutDisplay from '@/components/WorkoutDisplay'
 import PDFExportButton from '@/components/PDFExportButton'
-import CompleteButton from '@/components/CompleteButton'
 import SignupButton from '@/components/SignupButton'
 import StarRating from '@/components/StarRating'
+import { splitTitle } from '@/lib/format'
 import type { GeneratedWorkout } from '@/lib/types'
 import Link from 'next/link'
 
@@ -38,29 +38,33 @@ export default async function AthleteWorkoutDetailPage({ params }: { params: { i
   const isSignedUp = signups?.some((s) => s.user_id === user?.id) ?? false
   const participants = signups?.map((s: any) => s.profiles?.name).filter(Boolean) ?? []
 
+  const { name } = splitTitle(w.title)
+  const date = new Date(w.created_at).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Amsterdam' })
+
   return (
     <div className="space-y-5">
       <div>
-        <Link href="/athlete" className="text-sm text-[#ff99ff] hover:text-white mb-2 inline-block">
-          ← Terug
+        <Link href="/athlete" className="font-label font-bold text-xs uppercase tracking-widest text-muted hover:text-ink">
+          ← Trainingen
         </Link>
-        <h1 className="text-2xl font-bold text-white">{w.title ?? 'Training'}</h1>
-        <p className="text-[#ff99ff] mt-1">
-          {w.duration} min · {w.intensity}
-          {w.knee_friendly ? ' · knie-vriendelijk' : ''}
-        </p>
+        {date && <p className="sport-label mt-4">{date}</p>}
+        <h1 className="text-5xl mt-2">{name}</h1>
+        <div className="grid grid-cols-3 border-y-2 border-ink mt-4">
+          <div className="py-2.5"><p className="sport-number text-3xl">{w.duration}</p><p className="sport-label">minuten</p></div>
+          <div className="py-2.5 pl-3 border-l border-line"><p className="sport-number text-3xl capitalize">{w.intensity}</p><p className="sport-label">intensiteit</p></div>
+          <div className="py-2.5 pl-3 border-l border-line"><p className="sport-number text-3xl">{participants.length}</p><p className="sport-label">{participants.length === 1 ? 'doet mee' : 'doen mee'}</p></div>
+        </div>
+        {w.knee_friendly && <p className="sport-label text-moss mt-2">Knievriendelijk</p>}
       </div>
 
       <SignupButton workoutId={w.id} isSignedUp={isSignedUp} />
 
       {participants.length > 0 && (
-        <div className="card">
-          <p className="text-sm font-semibold text-white mb-2">
-            Wie doen er mee? ({participants.length})
-          </p>
-          <div className="flex flex-wrap gap-2">
+        <div>
+          <p className="sport-label mb-2">Wie doen er mee</p>
+          <div className="flex flex-wrap -m-1">
             {participants.map((name, i) => (
-              <span key={i} className="text-xs bg-magenta-900/40 border border-magenta-700 text-magenta-300 px-2 py-1 rounded-full">
+              <span key={i} className="m-1 text-sm bg-surface border border-line px-2.5 py-1 rounded-sm">
                 {name}
               </span>
             ))}
@@ -70,8 +74,7 @@ export default async function AthleteWorkoutDetailPage({ params }: { params: { i
 
       <WorkoutDisplay workout={w.content} showKneeAlternatives={w.knee_friendly} />
 
-      <PDFExportButton workout={w.content} title={w.title ?? 'Training'} />
-      <CompleteButton workoutId={w.id} completedAt={w.completed_at ?? null} />
+      <PDFExportButton workout={w.content} title={w.title ?? 'Training'} duration={w.duration} intensity={w.intensity} showKnee={w.knee_friendly} />
       <StarRating workoutId={w.id} initialRating={myRating?.rating ?? null} initialComment={myRating?.comment ?? null} />
     </div>
   )

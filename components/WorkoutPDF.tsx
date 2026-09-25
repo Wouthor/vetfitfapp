@@ -1,188 +1,260 @@
 import React from 'react'
-import {
-  Document,
-  Page,
-  Text,
-  View,
-  StyleSheet,
-} from '@react-pdf/renderer'
+import path from 'path'
+import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
 import type { WorkoutContent, WorkoutSection, Exercise } from '@/lib/types'
+import { splitTitle } from '@/lib/format'
+
+// Zelfde lettertypen als de app; de bestanden komen uit de @fontsource-pakketten
+const fontFile = (pkg: string, file: string) => path.join(process.cwd(), 'node_modules', '@fontsource', pkg, 'files', file)
+
+Font.register({ family: 'Anton', src: fontFile('anton', 'anton-latin-400-normal.woff') })
+Font.register({
+  family: 'Archivo',
+  fonts: [
+    { src: fontFile('archivo', 'archivo-latin-400-normal.woff'), fontWeight: 400 },
+    { src: fontFile('archivo', 'archivo-latin-500-normal.woff'), fontWeight: 500 },
+    { src: fontFile('archivo', 'archivo-latin-700-normal.woff'), fontWeight: 700 },
+  ],
+})
+Font.register({
+  family: 'Archivo Narrow',
+  fonts: [
+    { src: fontFile('archivo-narrow', 'archivo-narrow-latin-500-normal.woff'), fontWeight: 500 },
+    { src: fontFile('archivo-narrow', 'archivo-narrow-latin-700-normal.woff'), fontWeight: 700 },
+  ],
+})
+// Geen automatische afbreekstreepjes midden in woorden
+Font.registerHyphenationCallback((word) => [word])
+
+const C = {
+  ink: '#12261e',
+  inkSoft: '#2c4a3d',
+  muted: '#5d7268',
+  faint: '#8a9a92',
+  sage: '#9fb8aa',
+  mint: '#dfe8e1',
+  moss: '#2f6b4f',
+  line: '#d3cfc4',
+  paper: '#f3f1ec',
+}
 
 const styles = StyleSheet.create({
   page: {
-    padding: 40,
-    fontFamily: 'Helvetica',
+    paddingTop: 66,
+    paddingBottom: 48,
+    paddingHorizontal: 0,
+    fontFamily: 'Archivo',
+    fontSize: 10,
+    color: C.ink,
     backgroundColor: '#ffffff',
   },
-  header: {
-    marginBottom: 24,
+  band: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 46,
+    backgroundColor: C.ink,
+    paddingHorizontal: 40,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  wordmark: { fontFamily: 'Anton', fontSize: 20, lineHeight: 1.2, color: C.paper, letterSpacing: 1 },
+  bandLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 8, color: C.sage, letterSpacing: 1.5, textTransform: 'uppercase' },
+  body: { paddingHorizontal: 40 },
+  eyebrow: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 8, color: C.muted, letterSpacing: 1.5, textTransform: 'uppercase' },
+  title: { fontFamily: 'Anton', fontSize: 38, lineHeight: 1, textTransform: 'uppercase', marginTop: 6 },
+  stats: {
+    flexDirection: 'row',
+    borderTopWidth: 2,
     borderBottomWidth: 2,
-    borderBottomColor: '#f97316',
-    paddingBottom: 12,
+    borderColor: C.ink,
+    marginTop: 14,
+    marginBottom: 16,
   },
-  logoPlaceholder: {
-    width: 48,
-    height: 48,
-    backgroundColor: '#f97316',
-    borderRadius: 8,
-    marginBottom: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  logoText: {
-    color: '#ffffff',
-    fontSize: 20,
-    fontFamily: 'Helvetica-Bold',
-  },
-  title: {
-    fontSize: 22,
-    fontFamily: 'Helvetica-Bold',
-    color: '#111827',
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 11,
-    color: '#6b7280',
-  },
-  section: {
-    marginBottom: 18,
-  },
-  sectionHeader: {
+  stat: { flex: 1, paddingVertical: 7 },
+  statDivided: { flex: 1, paddingVertical: 7, paddingLeft: 10, borderLeftWidth: 1, borderLeftColor: C.line },
+  statValue: { fontFamily: 'Anton', fontSize: 20, lineHeight: 1, textTransform: 'capitalize' },
+  statLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 7.5, color: C.muted, letterSpacing: 1.2, textTransform: 'uppercase', marginTop: 3 },
+  section: { marginBottom: 12 },
+  sectionHead: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#f3f4f6',
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-    borderRadius: 6,
-    marginBottom: 8,
+    alignItems: 'flex-end',
+    borderBottomWidth: 1,
+    borderBottomColor: C.ink,
+    paddingBottom: 4,
+    marginBottom: 2,
   },
-  sectionTitle: {
-    fontSize: 13,
-    fontFamily: 'Helvetica-Bold',
-    color: '#111827',
-  },
-  sectionDuration: {
-    fontSize: 10,
-    color: '#6b7280',
-    fontFamily: 'Helvetica-Oblique',
-  },
-  exerciseCard: {
-    backgroundColor: '#f9fafb',
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 6,
-    borderLeftWidth: 3,
-    borderLeftColor: '#f97316',
-  },
-  exerciseRow: {
+  sectionTitleRow: { flexDirection: 'row', alignItems: 'flex-end' },
+  sectionNum: { fontFamily: 'Anton', fontSize: 18, color: C.sage, marginRight: 6, lineHeight: 1 },
+  sectionTitle: { fontFamily: 'Anton', fontSize: 18, textTransform: 'uppercase', lineHeight: 1 },
+  sectionDuration: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 8, color: C.muted, letterSpacing: 1.2, textTransform: 'uppercase' },
+  exercise: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    marginBottom: 4,
+    paddingVertical: 5,
+    borderBottomWidth: 0.5,
+    borderBottomColor: C.line,
   },
-  exerciseName: {
-    fontSize: 11,
-    fontFamily: 'Helvetica-Bold',
-    color: '#111827',
-    flex: 1,
+  exNum: { width: 18, fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 9, color: C.faint, paddingTop: 1 },
+  exBody: { flex: 1 },
+  exHeadRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  exName: { flex: 1, fontWeight: 700, fontSize: 11, lineHeight: 1.25, paddingRight: 8 },
+  exSets: {
+    maxWidth: '42%',
+    fontFamily: 'Archivo Narrow',
+    fontWeight: 700,
+    fontSize: 8.5,
+    backgroundColor: C.mint,
+    paddingHorizontal: 5,
+    paddingVertical: 2,
+    textAlign: 'right',
   },
-  exerciseSets: {
-    fontSize: 10,
-    color: '#f97316',
-    fontFamily: 'Helvetica-Bold',
-    marginLeft: 8,
+  bulletRow: { flexDirection: 'row', marginTop: 1.5 },
+  bulletDash: { width: 7, height: 1, backgroundColor: C.ink, marginTop: 5, marginRight: 6 },
+  bulletText: { flex: 1, fontSize: 9.5, lineHeight: 1.3, color: C.inkSoft },
+  knee: {
+    marginTop: 3,
+    borderLeftWidth: 2,
+    borderLeftColor: C.sage,
+    paddingLeft: 6,
   },
-  exerciseDesc: {
-    fontSize: 10,
-    color: '#374151',
-    lineHeight: 1.4,
-    marginBottom: 4,
-  },
-  kneeAlt: {
-    fontSize: 9,
-    color: '#2563eb',
-    borderTopWidth: 0.5,
-    borderTopColor: '#dbeafe',
-    paddingTop: 4,
-    lineHeight: 1.4,
-  },
-  kneeLine: {
-    fontSize: 9,
-    color: '#3b82f6',
-    fontFamily: 'Helvetica-Bold',
-  },
+  kneeLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 7.5, color: C.moss, letterSpacing: 1.2, textTransform: 'uppercase' },
+  kneeText: { fontSize: 9, lineHeight: 1.3, color: C.inkSoft },
   footer: {
-    marginTop: 20,
-    paddingTop: 10,
-    borderTopWidth: 0.5,
-    borderTopColor: '#e5e7eb',
+    position: 'absolute',
+    bottom: 20,
+    left: 40,
+    right: 40,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderTopWidth: 0.5,
+    borderTopColor: C.line,
+    paddingTop: 6,
   },
-  footerText: {
-    fontSize: 8,
-    color: '#9ca3af',
-  },
+  footerText: { fontFamily: 'Archivo Narrow', fontWeight: 500, fontSize: 7.5, color: C.faint, letterSpacing: 1, textTransform: 'uppercase' },
 })
 
-function ExercisePDF({ exercise }: { exercise: Exercise }) {
+// De webfonts bevatten geen emoji of pijltekens; vervang wat Claude soms in namen zet
+function clean(text: string | null | undefined): string {
+  if (!text) return ''
+  return text
+    .replace(/↳\s*/g, '› ')
+    .replace(/[→⟶]/g, '–')
+    .replace(new RegExp('[\\u{1F000}-\\u{1FAFF}\\u{2600}-\\u{27BF}\\u{FE0F}\\u{200D}]', 'gu'), '')
+    .trim()
+}
+
+function toBullets(text: string): string[] {
+  return clean(text)
+    .split(/\.\s+|\n+/)
+    .map((l) => l.replace(/^[-•]\s*/, '').replace(/\.$/, '').trim())
+    .filter((l) => l.length > 2)
+}
+
+function ExercisePDF({ exercise, index, showKnee }: { exercise: Exercise; index: number; showKnee: boolean }) {
+  const bullets = toBullets(exercise.beschrijving)
   return (
-    <View style={styles.exerciseCard}>
-      <View style={styles.exerciseRow}>
-        <Text style={styles.exerciseName}>{exercise.naam}</Text>
-        <Text style={styles.exerciseSets}>{exercise.duur_of_sets}</Text>
-      </View>
-      <Text style={styles.exerciseDesc}>{exercise.beschrijving}</Text>
-      {exercise.knie_vriendelijk_alternatief && (
-        <View style={styles.kneeAlt}>
-          <Text>
-            <Text style={styles.kneeLine}>Knie-alternatief: </Text>
-            <Text style={styles.exerciseDesc}>{exercise.knie_vriendelijk_alternatief}</Text>
-          </Text>
+    <View style={styles.exercise} wrap={false}>
+      <Text style={styles.exNum}>{index + 1}</Text>
+      <View style={styles.exBody}>
+        <View style={styles.exHeadRow}>
+          <Text style={styles.exName}>{clean(exercise.naam)}</Text>
+          {exercise.duur_of_sets ? <Text style={styles.exSets}>{clean(exercise.duur_of_sets)}</Text> : null}
         </View>
-      )}
+        {bullets.map((b, i) => (
+          <View key={i} style={styles.bulletRow}>
+            <View style={styles.bulletDash} />
+            <Text style={styles.bulletText}>{b}</Text>
+          </View>
+        ))}
+        {showKnee && exercise.knie_vriendelijk_alternatief ? (
+          <View style={styles.knee}>
+            <Text style={styles.kneeText}>
+              <Text style={styles.kneeLabel}>KNIE  </Text>
+              {clean(exercise.knie_vriendelijk_alternatief)}
+            </Text>
+          </View>
+        ) : null}
+      </View>
     </View>
   )
 }
 
-function SectionPDF({ title, section }: { title: string; section: WorkoutSection }) {
+function SectionPDF({ num, title, section, showKnee }: { num: string; title: string; section?: WorkoutSection; showKnee: boolean }) {
+  if (!section?.oefeningen?.length) return null
   return (
     <View style={styles.section}>
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>{title}</Text>
-        <Text style={styles.sectionDuration}>{section.duur}</Text>
+      <View style={styles.sectionHead} wrap={false} minPresenceAhead={60}>
+        <View style={styles.sectionTitleRow}>
+          <Text style={styles.sectionNum}>{num}</Text>
+          <Text style={styles.sectionTitle}>{title}</Text>
+        </View>
+        <Text style={styles.sectionDuration}>{clean(section.duur)}</Text>
       </View>
       {section.oefeningen.map((ex, i) => (
-        <ExercisePDF key={i} exercise={ex} />
+        <ExercisePDF key={i} exercise={ex} index={i} showKnee={showKnee} />
       ))}
     </View>
   )
 }
 
-export function WorkoutPDFDocument({ workout, title }: { workout: WorkoutContent; title: string }) {
-  const date = new Date().toLocaleDateString('nl-NL')
+export function WorkoutPDFDocument({
+  workout,
+  title,
+  duration,
+  intensity,
+  showKnee = true,
+}: {
+  workout: WorkoutContent
+  title: string
+  duration?: number
+  intensity?: string
+  showKnee?: boolean
+}) {
+  const { name, date } = splitTitle(title)
+  const dateLabel = date ?? new Date().toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Amsterdam' })
+  const exerciseCount =
+    (workout.warming_up?.oefeningen?.length ?? 0) +
+    (workout.hoofddeel?.oefeningen?.length ?? 0) +
+    (workout.cooling_down?.oefeningen?.length ?? 0)
+
+  const stats = [
+    ...(duration ? [{ value: String(duration), label: 'minuten' }] : []),
+    ...(intensity ? [{ value: intensity, label: 'intensiteit' }] : []),
+    { value: String(exerciseCount), label: 'oefeningen' },
+  ]
 
   return (
-    <Document>
+    <Document title={clean(name)} author="VetFit">
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={styles.logoPlaceholder}>
-            <Text style={styles.logoText}>B</Text>
-          </View>
-          <Text style={styles.title}>{title || 'Bootcamp Training'}</Text>
-          <Text style={styles.subtitle}>VetFitFapp · {date}</Text>
+        <View style={styles.band} fixed>
+          <Text style={styles.wordmark}>VETFIT</Text>
+          <Text style={styles.bandLabel}>Bootcamp · trainingsschema</Text>
         </View>
 
-        <SectionPDF title="🔥 Warming-up" section={workout.warming_up} />
-        <SectionPDF title="💪 Hoofddeel" section={workout.hoofddeel} />
-        <SectionPDF title="❄️ Cooling-down" section={workout.cooling_down} />
+        <View style={styles.body}>
+          <Text style={styles.eyebrow}>{dateLabel}</Text>
+          <Text style={styles.title}>{clean(name)}</Text>
 
-        {/* Footer */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>VetFitFapp App</Text>
-          <Text style={styles.footerText}>{date}</Text>
+          <View style={styles.stats}>
+            {stats.map((s, i) => (
+              <View key={s.label} style={i === 0 ? styles.stat : styles.statDivided}>
+                <Text style={styles.statValue}>{s.value}</Text>
+                <Text style={styles.statLabel}>{s.label}</Text>
+              </View>
+            ))}
+          </View>
+
+          <SectionPDF num="01" title="Warming-up" section={workout.warming_up} showKnee={showKnee} />
+          <SectionPDF num="02" title="Hoofddeel" section={workout.hoofddeel} showKnee={showKnee} />
+          <SectionPDF num="03" title="Cooling-down" section={workout.cooling_down} showKnee={showKnee} />
+        </View>
+
+        <View style={styles.footer} fixed>
+          <Text style={styles.footerText}>VetFit · {clean(name)}</Text>
+          <Text style={styles.footerText} render={({ pageNumber, totalPages }) => `Pagina ${pageNumber} van ${totalPages}`} />
         </View>
       </Page>
     </Document>

@@ -2,11 +2,14 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { WorkoutContent, Exercise } from '@/lib/types'
+import type { WorkoutContent, Exercise, Intensity } from '@/lib/types'
 
 interface WorkoutEditorProps {
   workoutId: string
   initialContent: WorkoutContent
+  intensity?: Intensity
+  kneeFriendly?: boolean
+  equipment?: string[]
   onClose: () => void
 }
 
@@ -18,8 +21,8 @@ const sectionConfig = {
   },
   hoofddeel: {
     label: 'Hoofddeel',
-    accent: 'text-magenta-400',
-    border: 'border-magenta-500/30',
+    accent: 'text-neon-400',
+    border: 'border-neon-400/30',
   },
   cooling_down: {
     label: 'Cooling-down',
@@ -32,34 +35,68 @@ type SectionKey = keyof typeof sectionConfig
 
 function ExerciseEditor({
   exercise,
+  sectionLabel,
+  intensity,
+  kneeFriendly,
+  equipment,
   onChange,
   onRemove,
 }: {
   exercise: Exercise
+  sectionLabel: string
+  intensity: Intensity
+  kneeFriendly: boolean
+  equipment: string[]
   onChange: (updated: Exercise) => void
   onRemove: () => void
 }) {
+  const [replacing, setReplacing] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleReplace() {
+    setReplacing(true)
+    setError('')
+    try {
+      const res = await fetch('/api/generate/exercise', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sectionLabel, currentExercise: exercise, equipment, kneeFriendly, intensity }),
+      })
+      const data = await res.json()
+      if (!res.ok) {
+        setError(data.error ?? 'Genereren mislukt')
+        return
+      }
+      onChange(data.exercise)
+    } catch {
+      setError('Genereren mislukt')
+    } finally {
+      setReplacing(false)
+    }
+  }
+
   return (
-    <div className="bg-void-input border border-void-border rounded-xl p-4 space-y-3">
+    <div className="bg-void-input border border-void-border rounded-sm p-4 space-y-3">
       <div className="flex space-x-2 items-start">
         <input
           value={exercise.naam}
           onChange={(e) => onChange({ ...exercise, naam: e.target.value })}
           placeholder="Naam oefening"
-          className="flex-1 bg-void-input border border-void-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-magenta-500 placeholder-gray-500"
+          className="flex-1 bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
         />
         <input
           value={exercise.duur_of_sets}
           onChange={(e) => onChange({ ...exercise, duur_of_sets: e.target.value })}
           placeholder="Sets/tijd"
-          className="w-28 bg-void-input border border-void-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-magenta-500 placeholder-gray-500"
+          className="w-28 bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
         />
         <button
           onClick={onRemove}
-          className="text-red-400 hover:text-red-300 px-2 py-2 flex-shrink-0 transition-colors"
+          className="text-red-700 hover:text-red-900 px-2 py-2 flex-shrink-0 transition-colors"
           title="Verwijder oefening"
+          aria-label="Verwijder oefening"
         >
-          🗑️
+          <span aria-hidden="true" className="text-xl leading-none">×</span>
         </button>
       </div>
       <textarea
@@ -67,19 +104,27 @@ function ExerciseEditor({
         onChange={(e) => onChange({ ...exercise, beschrijving: e.target.value })}
         placeholder="Beschrijving"
         rows={2}
-        className="w-full bg-void-input border border-void-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-magenta-500 placeholder-gray-500 resize-none"
+        className="w-full bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint resize-none"
       />
       <input
         value={exercise.knie_vriendelijk_alternatief}
         onChange={(e) => onChange({ ...exercise, knie_vriendelijk_alternatief: e.target.value })}
         placeholder="Knie-vriendelijk alternatief"
-        className="w-full bg-void-input border border-void-border rounded-lg px-3 py-2 text-white text-sm focus:outline-none focus:border-magenta-500 placeholder-gray-500"
+        className="w-full bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
       />
+      <button
+        onClick={handleReplace}
+        disabled={replacing}
+        className="w-full py-2 rounded-sm border border-neon-400/40 text-neon-400 text-sm font-medium hover:bg-neon-400/10 transition-colors disabled:opacity-50"
+      >
+        {replacing ? 'Bezig met genereren...' : 'Vervang met AI'}
+      </button>
+      {error && <p className="text-xs text-red-700">{error}</p>}
     </div>
   )
 }
 
-export default function WorkoutEditor({ workoutId, initialContent, onClose }: WorkoutEditorProps) {
+export default function WorkoutEditor({ workoutId, initialContent, intensity = 'middel', kneeFriendly = false, equipment = [], onClose }: WorkoutEditorProps) {
   const router = useRouter()
   const [content, setContent] = useState<WorkoutContent>(initialContent)
   const [saving, setSaving] = useState(false)
@@ -130,7 +175,7 @@ export default function WorkoutEditor({ workoutId, initialContent, onClose }: Wo
                   setContent({ ...content, [key]: { ...section, duur: e.target.value } })
                 }
                 placeholder="Duur"
-                className="w-36 bg-void-input border border-void-border rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-magenta-500 placeholder-gray-500"
+                className="w-36 bg-void-input border border-void-border rounded-sm px-3 py-1.5 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
               />
             </div>
             <div className="space-y-3">
@@ -138,6 +183,10 @@ export default function WorkoutEditor({ workoutId, initialContent, onClose }: Wo
                 <ExerciseEditor
                   key={i}
                   exercise={ex}
+                  sectionLabel={cfg.label}
+                  intensity={intensity}
+                  kneeFriendly={kneeFriendly}
+                  equipment={equipment}
                   onChange={(updated) => updateExercise(key, i, updated)}
                   onRemove={() => removeExercise(key, i)}
                 />
@@ -156,7 +205,7 @@ export default function WorkoutEditor({ workoutId, initialContent, onClose }: Wo
                   },
                 })
               }
-              className="w-full py-2 border border-dashed border-void-border text-gray-400 hover:text-white hover:border-gray-400 rounded-xl text-sm transition-colors"
+              className="w-full py-2 border border-dashed border-void-border text-muted hover:text-ink hover:border-gray-400 rounded-sm text-sm transition-colors"
             >
               + Oefening toevoegen
             </button>

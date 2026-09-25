@@ -18,7 +18,7 @@ export default function EquipmentPicker({ selected, onChange }: EquipmentPickerP
 
   return (
     <div>
-      <label className="block text-sm font-medium text-[#7b8db8] mb-2">
+      <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-2">
         Beschikbaar materiaal
       </label>
       <div className="grid grid-cols-2 gap-2">
@@ -29,21 +29,21 @@ export default function EquipmentPicker({ selected, onChange }: EquipmentPickerP
               key={item.id}
               type="button"
               onClick={() => toggle(item.id)}
-              className={`flex items-center space-x-2 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors text-left ${
+              aria-pressed={active}
+              className={`flex items-center justify-between px-3 py-2.5 rounded-sm text-sm font-medium transition-colors text-left border-2 ${
                 active
-                  ? 'bg-magenta-500/20 border border-magenta-500 text-magenta-300'
-                  : 'bg-void-input border border-void-border text-[#7b8db8] hover:border-magenta-700'
+                  ? 'bg-mint border-ink text-ink'
+                  : 'bg-surface border-line text-muted hover:border-ink hover:text-ink'
               }`}
             >
-              <span>{item.emoji}</span>
               <span className="truncate">{item.label}</span>
-              {active && <span className="ml-auto text-neon-400 flex-shrink-0">✓</span>}
+              {active && <span className="ml-2 flex-shrink-0" aria-hidden="true">✓</span>}
             </button>
           )
         })}
       </div>
       {selected.length > 0 && (
-        <p className="text-xs text-[#4a5e8a] mt-2">{selected.length} item(s) geselecteerd</p>
+        <p className="text-xs text-muted mt-2">{selected.length} {selected.length === 1 ? 'item' : 'items'} geselecteerd</p>
       )}
     </div>
   )

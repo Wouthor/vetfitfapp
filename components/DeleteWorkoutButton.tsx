@@ -21,13 +21,13 @@ export default function DeleteWorkoutButton({ workoutId }: { workoutId: string }
         <button
           onClick={handleDelete}
           disabled={loading}
-          className="flex-1 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 text-white font-semibold text-sm transition-colors"
+          className="flex-1 py-2.5 rounded-sm bg-red-700 hover:bg-red-800 text-white font-label font-bold uppercase tracking-wider text-sm transition-colors"
         >
           {loading ? 'Bezig...' : 'Ja, verwijderen'}
         </button>
         <button
           onClick={() => setConfirm(false)}
-          className="flex-1 py-2.5 rounded-xl bg-void-card hover:bg-void-input text-[#ffccff] font-semibold text-sm transition-colors border border-void-border"
+          className="flex-1 py-2.5 rounded-sm bg-transparent hover:bg-sunken text-ink font-label font-bold uppercase tracking-wider text-sm transition-colors border-2 border-ink"
         >
           Annuleren
         </button>
@@ -38,9 +38,9 @@ export default function DeleteWorkoutButton({ workoutId }: { workoutId: string }
   return (
     <button
       onClick={() => setConfirm(true)}
-      className="w-full py-2.5 rounded-xl bg-void-card border border-red-700 hover:bg-red-900/60 text-red-400 font-semibold text-sm transition-colors"
+      className="w-full py-2.5 rounded-sm font-label font-bold text-xs uppercase tracking-widest text-red-700 hover:bg-red-50 transition-colors"
     >
-      🗑 Training verwijderen
+      Training verwijderen
     </button>
   )
 }

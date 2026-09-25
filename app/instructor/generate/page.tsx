@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import type { Duration, Intensity, WorkoutContent } from '@/lib/types'
 import WorkoutDisplay from '@/components/WorkoutDisplay'
 import WorkoutEditor from '@/components/WorkoutEditor'
@@ -16,6 +17,7 @@ export default function GeneratePage() {
   const [kneeFriendly, setKneeFriendly] = useState(false)
   const [equipment, setEquipment] = useState<string[]>([])
   const [chatfit, setChatfit] = useState('')
+  const [useWebSearch, setUseWebSearch] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [workout, setWorkout] = useState<WorkoutContent | null>(null)
@@ -56,7 +58,7 @@ export default function GeneratePage() {
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ duration, intensity, kneeFriendly, equipment, chatfit }),
+      body: JSON.stringify({ duration, intensity, kneeFriendly, equipment, chatfit, useWebSearch }),
     })
 
     const data = await res.json()
@@ -85,21 +87,22 @@ export default function GeneratePage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-white">Training genereren</h1>
-        <p className="text-[#ff99ff] mt-1">Kies parameters en laat AI een training maken</p>
+        <Link href="/instructor" className="font-label font-bold text-xs uppercase tracking-widest text-muted hover:text-ink">
+          ← Dashboard
+        </Link>
+        <h1 className="text-5xl mt-3">Nieuwe training</h1>
+        <p className="text-muted text-sm mt-1">Kies de opzet; de training wordt gemaakt op basis van jullie eigen trainingen.</p>
       </div>
 
       <div className="card space-y-5">
         <div>
-          <label className="block text-sm font-medium text-[#ffccff] mb-2">Duur</label>
+          <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-2">Duur</label>
           <div className="grid grid-cols-3 gap-2">
             {([30, 45, 60] as Duration[]).map((d) => (
               <button
                 key={d}
                 onClick={() => setDuration(d)}
-                className={`py-3 rounded-xl font-semibold transition-colors ${
-                  duration === d ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#ffccff] hover:border-magenta-700 border border-void-border'
-                }`}
+                className={duration === d ? 'opt-on' : 'opt'}
               >
                 {d} min
               </button>
@@ -108,15 +111,13 @@ export default function GeneratePage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-[#ffccff] mb-2">Intensiteit</label>
+          <label className="block font-label font-bold text-xs uppercase tracking-widest text-muted mb-2">Intensiteit</label>
           <div className="grid grid-cols-3 gap-2">
             {(['laag', 'middel', 'hoog'] as Intensity[]).map((i) => (
               <button
                 key={i}
                 onClick={() => setIntensity(i)}
-                className={`py-3 rounded-xl font-semibold capitalize transition-colors ${
-                  intensity === i ? 'bg-magenta-500 text-white' : 'bg-void-input text-[#ffccff] hover:border-magenta-700 border border-void-border'
-                }`}
+                className={intensity === i ? 'opt-on' : 'opt'}
               >
                 {i}
               </button>
@@ -126,14 +127,14 @@ export default function GeneratePage() {
 
         <button
           onClick={() => setKneeFriendly(!kneeFriendly)}
-          className={`w-full flex items-center justify-between py-3 px-4 rounded-xl transition-colors border ${
-            kneeFriendly
-              ? 'bg-electric-900/50 border-electric-700 text-electric-300'
-              : 'bg-void-input border-void-border text-[#ffccff] hover:border-magenta-700'
-          }`}
+          className={`toggle-row ${kneeFriendly ? 'border-ink bg-mint' : 'border-line bg-surface hover:border-ink'}`}
+          aria-pressed={kneeFriendly}
         >
-          <span className="font-medium">Knieblessures in de groep</span>
-          <span className={`w-6 h-6 rounded-full flex items-center justify-center text-sm ${kneeFriendly ? 'bg-electric-500 text-white' : 'bg-void-border'}`}>
+          <span>
+            <span className="block font-label font-bold text-sm uppercase tracking-wider">Knieblessures in de groep</span>
+            <span className="block text-xs text-muted mt-0.5">Elke oefening krijgt een knievriendelijk alternatief</span>
+          </span>
+          <span className={`toggle-box ${kneeFriendly ? 'bg-ink border-ink text-paper' : 'border-line'}`}>
             {kneeFriendly ? '✓' : ''}
           </span>
         </button>
@@ -141,12 +142,26 @@ export default function GeneratePage() {
         <EquipmentPicker selected={equipment} onChange={saveEquipment} />
         <ChatFitInput value={chatfit} onChange={setChatfit} />
 
+        <button
+          onClick={() => setUseWebSearch(!useWebSearch)}
+          className={`toggle-row ${useWebSearch ? 'border-ink bg-mint' : 'border-line bg-surface hover:border-ink'}`}
+          aria-pressed={useWebSearch}
+        >
+          <span>
+            <span className="block font-label font-bold text-sm uppercase tracking-wider">Ook internet als bron</span>
+            <span className="block text-xs text-muted mt-0.5">Zoekt online naar extra oefeningen, alleen met jouw materiaal</span>
+          </span>
+          <span className={`toggle-box ${useWebSearch ? 'bg-ink border-ink text-paper' : 'border-line'}`}>
+            {useWebSearch ? '✓' : ''}
+          </span>
+        </button>
+
         <button onClick={handleGenerate} disabled={loading} className="btn-primary w-full">
-          {loading ? <span className="flex items-center justify-center space-x-2"><span className="animate-spin">⟳</span> Genereren...</span> : 'Training genereren'}
+          {loading ? (useWebSearch ? 'Bezig, dit duurt iets langer…' : 'Training wordt gemaakt…') : 'Training maken'}
         </button>
       </div>
 
-      {error && <div className="bg-red-900/30 border border-red-800 rounded-xl px-4 py-3 text-red-400">{error}</div>}
+      {error && <div className="bg-red-50 border border-red-300 rounded-sm px-4 py-3 text-red-700">{error}</div>}
 
       {workout && (
         <div className="space-y-4">
@@ -157,7 +172,7 @@ export default function GeneratePage() {
             className="input"
           />
           {editing && workoutId ? (
-            <WorkoutEditor workoutId={workoutId} initialContent={workout} onClose={() => { setEditing(false) }} />
+            <WorkoutEditor workoutId={workoutId} initialContent={workout} intensity={intensity} kneeFriendly={kneeFriendly} equipment={equipment} onClose={() => { setEditing(false) }} />
           ) : (
             <>
               <WorkoutDisplay workout={workout} showKneeAlternatives={true} />

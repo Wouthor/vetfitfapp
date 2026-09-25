@@ -21,27 +21,24 @@ export default function NavBar({ role, email }: NavBarProps) {
   }
 
   return (
-    <header className="bg-magenta-700 border-b border-magenta-600 sticky top-0 z-50">
+    <header className="bg-ink sticky top-0 z-50">
       <div className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
-        <Link href={role === 'instructor' ? '/instructor' : '/athlete'} className="flex items-center space-x-2">
-          <span className="text-xl">🏋️</span>
-          <span className="font-bold text-white">VetFitFapp</span>
-          {role === 'instructor' && (
-            <span className="text-xs bg-neon-400 text-[#1a1a00] px-2 py-0.5 rounded-full font-semibold">
-              Instructeur
-            </span>
-          )}
+        <Link href={role === 'instructor' ? '/instructor' : '/athlete'} className="flex items-baseline space-x-3">
+          <span className="font-display text-paper text-2xl leading-none tracking-wide">VETFIT</span>
+          <span className="font-label font-bold text-[11px] uppercase tracking-widest text-sage">
+            {role === 'instructor' ? 'Instructeur' : 'Bootcamp'}
+          </span>
         </Link>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4">
           {email && (
-            <span className="text-sm text-[#ffccff] hidden sm:block truncate max-w-32">
+            <span className="text-sm text-sage hidden sm:block truncate max-w-32">
               {email}
             </span>
           )}
           <button
             onClick={handleLogout}
-            className="text-sm text-[#ffccff] hover:text-white transition-colors"
+            className="font-label font-bold text-xs uppercase tracking-widest text-sage hover:text-paper transition-colors"
           >
             Uitloggen
           </button>
