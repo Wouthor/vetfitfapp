@@ -51,7 +51,7 @@ export default async function AthletePage() {
           sizes="(min-width: 672px) 672px, 100vw"
           className="object-cover object-[center_30%]"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10" />
+        <div className="absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10" />
         <div className="absolute left-0 right-0 bottom-0 px-4 pb-4">
           <p className="font-label font-bold text-xs uppercase tracking-widest text-rose">Van je instructeur</p>
           <h1 className="text-5xl text-paper mt-1">Trainingen</h1>

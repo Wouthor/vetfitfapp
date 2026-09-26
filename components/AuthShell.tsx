@@ -32,7 +32,7 @@ export default function AuthShell({ title, subtitle, children }: AuthShellProps)
             className={`object-cover object-[center_30%] transition-opacity duration-500 motion-reduce:transition-none ${loaded ? 'opacity-100' : 'opacity-0'}`}
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
+        <div className="absolute top-0 right-0 bottom-0 left-0 bg-gradient-to-t from-ink via-ink/40 to-ink/10" />
         <div className="absolute left-0 right-0 bottom-0 p-6 md:p-10">
           <p className="font-display text-paper text-5xl md:text-7xl leading-none tracking-wide">VETFIT</p>
           <p className="font-label font-bold text-xs uppercase tracking-widest text-rose mt-2">Bootcamp buiten, elke week</p>
