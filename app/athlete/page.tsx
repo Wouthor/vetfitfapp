@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
+import { randomHeroPhoto } from '@/lib/photos'
 import { splitTitle, formatWorkoutDate } from '@/lib/format'
 import InlineSignupButton from '@/components/InlineSignupButton'
 
@@ -43,12 +44,12 @@ export default async function AthletePage() {
     <div className="space-y-6">
       <div className="relative -mx-4 -mt-6 h-44 overflow-hidden bg-ink">
         <Image
-          src="/photos/02-oudere-sporters/10-bejaard.png"
-          alt="Groep oudere sporters traint samen met roze dumbbells"
+          src={randomHeroPhoto()}
+          alt=""
           fill
           priority
           sizes="(min-width: 672px) 672px, 100vw"
-          className="object-cover object-[center_25%]"
+          className="object-cover object-[center_30%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10" />
         <div className="absolute left-0 right-0 bottom-0 px-4 pb-4">

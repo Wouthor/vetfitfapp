@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import Image from 'next/image'
+import { randomHeroPhoto } from '@/lib/photos'
 import { splitTitle, formatWorkoutDate } from '@/lib/format'
 import SyncButton from '@/components/SyncButton'
 import WhatsAppReminderButton from '@/components/WhatsAppReminderButton'
@@ -55,12 +56,12 @@ export default async function InstructorDashboard() {
     <div className="space-y-6">
       <div className="relative -mx-4 -mt-6 h-48 overflow-hidden bg-ink">
         <Image
-          src="/photos/02-oudere-sporters/07-bejaard.png"
-          alt="Oudere sporter traint met een dumbbell onder een bord met 'Age is just a number'"
+          src={randomHeroPhoto()}
+          alt=""
           fill
           priority
           sizes="(min-width: 672px) 672px, 100vw"
-          className="object-cover object-[center_20%]"
+          className="object-cover object-[center_30%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10" />
         <div className="absolute left-0 right-0 bottom-0 px-4 pb-4">
