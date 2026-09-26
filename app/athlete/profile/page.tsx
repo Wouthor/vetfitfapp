@@ -77,14 +77,14 @@ export default async function AthleteProfilePage() {
       <div className={`rounded-sm px-4 py-5 ${hasStreakBadge ? 'bg-ink text-paper' : 'bg-surface border border-line'}`}>
         {hasStreakBadge && (
           <>
-            <p className="font-label font-bold text-xs uppercase tracking-widest text-sage">Badge behaald</p>
+            <p className="font-label font-bold text-xs uppercase tracking-widest text-rose">Badge behaald</p>
             <p className="font-display text-5xl uppercase leading-none mt-1">{streakBadgeLabel}</p>
-            <p className="text-sm text-sage mt-2">Je hebt {streak} trainingen op rij meegedaan.</p>
+            <p className="text-sm text-rose mt-2">Je hebt {streak} trainingen op rij meegedaan.</p>
           </>
         )}
         {nextGoal && (
           <div className={hasStreakBadge ? 'mt-5' : ''}>
-            <p className={`font-label font-bold text-xs uppercase tracking-widest ${hasStreakBadge ? 'text-sage' : 'text-muted'}`}>
+            <p className={`font-label font-bold text-xs uppercase tracking-widest ${hasStreakBadge ? 'text-rose' : 'text-muted'}`}>
               Volgende badge: {nextGoal} op rij
             </p>
             <div className="grid mt-2" style={{ gridTemplateColumns: `repeat(${nextGoal}, minmax(0, 1fr))`, gridColumnGap: '3px' }}>
@@ -95,7 +95,7 @@ export default async function AthleteProfilePage() {
                 />
               ))}
             </div>
-            <p className={`text-sm mt-2 ${hasStreakBadge ? 'text-sage' : 'text-muted'}`}>
+            <p className={`text-sm mt-2 ${hasStreakBadge ? 'text-rose' : 'text-muted'}`}>
               Nog {nextGoal - streak} {nextGoal - streak === 1 ? 'training' : 'trainingen'} te gaan.
             </p>
           </div>

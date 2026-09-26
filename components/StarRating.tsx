@@ -89,7 +89,7 @@ export default function StarRating({ workoutId, initialRating, initialComment }:
         {/* Status naast de sterren */}
         <span className="ml-2 text-xs">
           {savingRating && <span className="text-muted animate-pulse">Opslaan...</span>}
-          {!savingRating && ratingJustSaved && <span className="text-moss">✓ Opgeslagen</span>}
+          {!savingRating && ratingJustSaved && <span className="text-berry">✓ Opgeslagen</span>}
           {!savingRating && !ratingJustSaved && rating && <span className="text-muted">{ratingLabel}</span>}
         </span>
       </div>
@@ -107,7 +107,7 @@ export default function StarRating({ workoutId, initialRating, initialComment }:
           />
           <p className="text-xs text-right">
             {savingComment && <span className="text-muted animate-pulse">Opslaan...</span>}
-            {!savingComment && commentSaved && <span className="text-moss">✓ Opgeslagen</span>}
+            {!savingComment && commentSaved && <span className="text-berry">✓ Opgeslagen</span>}
             {!savingComment && !commentSaved && comment && <span className="text-muted opacity-50">Wordt opgeslagen...</span>}
           </p>
         </div>

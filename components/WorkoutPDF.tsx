@@ -27,15 +27,16 @@ Font.register({
 Font.registerHyphenationCallback((word) => [word])
 
 const C = {
-  ink: '#12261e',
-  inkSoft: '#2c4a3d',
-  muted: '#5d7268',
-  faint: '#8a9a92',
-  sage: '#9fb8aa',
-  mint: '#dfe8e1',
-  moss: '#2f6b4f',
-  line: '#d3cfc4',
-  paper: '#f3f1ec',
+  ink: '#2a0b22',
+  inkSoft: '#4d1b40',
+  brand: '#d4006f',
+  muted: '#7d5a6d',
+  faint: '#a98c9b',
+  rose: '#f39ac8',
+  blush: '#fde2ef',
+  berry: '#a3125f',
+  line: '#e0cdd6',
+  paper: '#f7f1f3',
 }
 
 const styles = StyleSheet.create({
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   wordmark: { fontFamily: 'Anton', fontSize: 20, lineHeight: 1.2, color: C.paper, letterSpacing: 1 },
-  bandLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 8, color: C.sage, letterSpacing: 1.5, textTransform: 'uppercase' },
+  bandLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 8, color: C.rose, letterSpacing: 1.5, textTransform: 'uppercase' },
   body: { paddingHorizontal: 40 },
   eyebrow: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 8, color: C.muted, letterSpacing: 1.5, textTransform: 'uppercase' },
   title: { fontFamily: 'Anton', fontSize: 38, lineHeight: 1, textTransform: 'uppercase', marginTop: 6 },
@@ -88,7 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   sectionTitleRow: { flexDirection: 'row', alignItems: 'flex-end' },
-  sectionNum: { fontFamily: 'Anton', fontSize: 18, color: C.sage, marginRight: 6, lineHeight: 1 },
+  sectionNum: { fontFamily: 'Anton', fontSize: 18, color: C.brand, marginRight: 6, lineHeight: 1 },
   sectionTitle: { fontFamily: 'Anton', fontSize: 18, textTransform: 'uppercase', lineHeight: 1 },
   sectionDuration: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 8, color: C.muted, letterSpacing: 1.2, textTransform: 'uppercase' },
   exercise: {
@@ -106,7 +107,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Archivo Narrow',
     fontWeight: 700,
     fontSize: 8.5,
-    backgroundColor: C.mint,
+    backgroundColor: C.blush,
     paddingHorizontal: 5,
     paddingVertical: 2,
     textAlign: 'right',
@@ -117,10 +118,10 @@ const styles = StyleSheet.create({
   knee: {
     marginTop: 3,
     borderLeftWidth: 2,
-    borderLeftColor: C.sage,
+    borderLeftColor: C.rose,
     paddingLeft: 6,
   },
-  kneeLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 7.5, color: C.moss, letterSpacing: 1.2, textTransform: 'uppercase' },
+  kneeLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 7.5, color: C.berry, letterSpacing: 1.2, textTransform: 'uppercase' },
   kneeText: { fontSize: 9, lineHeight: 1.3, color: C.inkSoft },
   footer: {
     position: 'absolute',

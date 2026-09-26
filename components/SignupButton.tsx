@@ -25,7 +25,7 @@ export default function SignupButton({ workoutId, isSignedUp: initial }: SignupB
   if (isSignedUp) {
     return (
       <div className="space-y-2">
-        <div className="flex items-center py-3 px-4 bg-mint rounded-sm">
+        <div className="flex items-center py-3 px-4 bg-blush rounded-sm">
           <p className="font-label font-bold text-sm uppercase tracking-wider">✓ Je doet mee</p>
           <button
             onClick={handleToggle}

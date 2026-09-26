@@ -18,37 +18,38 @@ const config: Config = {
         sm: '3px',
       },
       colors: {
-        // Clubkleuren: gebroken wit papier, diep donkergroen, salie als tweede tint
-        paper: '#f3f1ec',
-        surface: '#fbfaf6',
-        sunken: '#ece9e1',
-        line: '#d3cfc4',
-        ink: { DEFAULT: '#12261e', soft: '#2c4a3d' },
-        muted: '#5d7268',
-        faint: '#8a9a92',
-        sage: '#9fb8aa',
-        mint: '#dfe8e1',
-        moss: '#2f6b4f',
+        // Roze/magenta: licht roze-grijs papier, diep aubergine als inkt, magenta als merkkleur
+        paper: '#f7f1f3',
+        surface: '#fffafc',
+        sunken: '#f0e5ea',
+        line: '#e0cdd6',
+        ink: { DEFAULT: '#2a0b22', soft: '#4d1b40' },
+        brand: { DEFAULT: '#d4006f', dark: '#a8005a' },
+        muted: '#7d5a6d',
+        faint: '#a98c9b',
+        rose: '#f39ac8',     // lichtroze: labels op donker, sectienummers
+        blush: '#fde2ef',    // zachtroze vlakken: actieve keuzes, "gedaan"
+        berry: '#a3125f',    // donker magenta tekst op blush
         gold: '#a8741a',
         // Oude namen gemapt op het nieuwe palet, zodat bestaande classes meegaan
         neon: {
-          300: '#2c4a3d', 400: '#12261e', 500: '#0a1712',
-          700: '#9fb8aa', 800: '#cfdcd3', 900: '#dfe8e1', 950: '#ebf1ec',
+          300: '#4d1b40', 400: '#2a0b22', 500: '#1a0615',
+          700: '#f39ac8', 800: '#f8c4dd', 900: '#fde2ef', 950: '#fef0f6',
         },
         electric: {
-          300: '#2f6b4f', 400: '#2f6b4f', 500: '#3d7a5c',
-          700: '#9fb8aa', 800: '#cfdcd3', 900: '#dfe8e1', 950: '#ebf1ec',
+          300: '#a3125f', 400: '#a3125f', 500: '#d4006f',
+          700: '#f39ac8', 800: '#f8c4dd', 900: '#fde2ef', 950: '#fef0f6',
         },
         magenta: {
-          300: '#5d7268', 400: '#12261e', 500: '#12261e', 600: '#d3cfc4',
-          700: '#12261e', 800: '#cfdcd3', 900: '#dfe8e1', 950: '#ebf1ec',
+          300: '#7d5a6d', 400: '#2a0b22', 500: '#2a0b22', 600: '#e0cdd6',
+          700: '#2a0b22', 800: '#f8c4dd', 900: '#fde2ef', 950: '#fef0f6',
         },
         void: {
-          DEFAULT: '#f3f1ec',
-          card: '#fbfaf6',
-          input: '#ece9e1',
-          border: '#d3cfc4',
-          subtle: '#e9e6de',
+          DEFAULT: '#f7f1f3',
+          card: '#fffafc',
+          input: '#f0e5ea',
+          border: '#e0cdd6',
+          subtle: '#f0e5ea',
         },
       },
     },

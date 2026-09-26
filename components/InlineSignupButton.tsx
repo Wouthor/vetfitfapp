@@ -34,7 +34,7 @@ export default function InlineSignupButton({ workoutId, isSignedUp: initial, cou
       disabled={loading}
       className={`w-full py-2.5 rounded-sm font-label font-bold text-sm uppercase tracking-wider transition-colors border-2 ${
         isSignedUp
-          ? 'bg-ink border-ink text-paper hover:bg-ink-soft'
+          ? 'bg-brand border-brand text-white hover:bg-brand-dark'
           : 'bg-transparent border-ink text-ink hover:bg-sunken'
       }`}
     >

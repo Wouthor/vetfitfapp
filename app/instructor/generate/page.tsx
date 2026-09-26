@@ -128,14 +128,14 @@ export default function GeneratePage() {
 
         <button
           onClick={() => setKneeFriendly(!kneeFriendly)}
-          className={`toggle-row ${kneeFriendly ? 'border-ink bg-mint' : 'border-line bg-surface hover:border-ink'}`}
+          className={`toggle-row ${kneeFriendly ? 'border-ink bg-blush' : 'border-line bg-surface hover:border-ink'}`}
           aria-pressed={kneeFriendly}
         >
           <span>
             <span className="block font-label font-bold text-sm uppercase tracking-wider">Knieblessures in de groep</span>
             <span className="block text-xs text-muted mt-0.5">Elke oefening krijgt een knievriendelijk alternatief</span>
           </span>
-          <span className={`toggle-box ${kneeFriendly ? 'bg-ink border-ink text-paper' : 'border-line'}`}>
+          <span className={`toggle-box ${kneeFriendly ? 'bg-brand border-brand text-white' : 'border-line'}`}>
             {kneeFriendly ? '✓' : ''}
           </span>
         </button>
@@ -145,28 +145,28 @@ export default function GeneratePage() {
 
         <button
           onClick={() => setUseLibrary(!useLibrary)}
-          className={`toggle-row ${useLibrary ? 'border-ink bg-mint' : 'border-line bg-surface hover:border-ink'}`}
+          className={`toggle-row ${useLibrary ? 'border-ink bg-blush' : 'border-line bg-surface hover:border-ink'}`}
           aria-pressed={useLibrary}
         >
           <span>
             <span className="block font-label font-bold text-sm uppercase tracking-wider">Bibliotheek als bron</span>
             <span className="block text-xs text-muted mt-0.5">Bouwt de training op uit passende BootCraft-trainingen</span>
           </span>
-          <span className={`toggle-box ${useLibrary ? 'bg-ink border-ink text-paper' : 'border-line'}`}>
+          <span className={`toggle-box ${useLibrary ? 'bg-brand border-brand text-white' : 'border-line'}`}>
             {useLibrary ? '✓' : ''}
           </span>
         </button>
 
         <button
           onClick={() => setUseWebSearch(!useWebSearch)}
-          className={`toggle-row ${useWebSearch ? 'border-ink bg-mint' : 'border-line bg-surface hover:border-ink'}`}
+          className={`toggle-row ${useWebSearch ? 'border-ink bg-blush' : 'border-line bg-surface hover:border-ink'}`}
           aria-pressed={useWebSearch}
         >
           <span>
             <span className="block font-label font-bold text-sm uppercase tracking-wider">Ook internet als bron</span>
             <span className="block text-xs text-muted mt-0.5">Zoekt online naar extra oefeningen, alleen met jouw materiaal</span>
           </span>
-          <span className={`toggle-box ${useWebSearch ? 'bg-ink border-ink text-paper' : 'border-line'}`}>
+          <span className={`toggle-box ${useWebSearch ? 'bg-brand border-brand text-white' : 'border-line'}`}>
             {useWebSearch ? '✓' : ''}
           </span>
         </button>

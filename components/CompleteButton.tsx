@@ -36,17 +36,17 @@ export default function CompleteButton({ workoutId, completedAt }: CompleteButto
 
   if (done && date) {
     return (
-      <div className="flex items-center py-3 px-4 bg-mint rounded-sm">
+      <div className="flex items-center py-3 px-4 bg-blush rounded-sm">
         <div>
-          <p className="font-label font-bold text-sm uppercase tracking-wider text-moss">Training gedaan</p>
-          <p className="text-xs text-moss">
+          <p className="font-label font-bold text-sm uppercase tracking-wider text-berry">Training gedaan</p>
+          <p className="text-xs text-berry">
             {new Date(date).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}
           </p>
         </div>
         <button
           onClick={handleUndo}
           disabled={loading}
-          className="ml-auto font-label font-bold text-xs uppercase tracking-widest text-moss hover:text-ink disabled:opacity-50"
+          className="ml-auto font-label font-bold text-xs uppercase tracking-widest text-berry hover:text-ink disabled:opacity-50"
         >
           Ongedaan maken
         </button>

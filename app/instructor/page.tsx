@@ -55,16 +55,16 @@ export default async function InstructorDashboard() {
     <div className="space-y-6">
       <div className="relative -mx-4 -mt-6 h-48 overflow-hidden bg-ink">
         <Image
-          src="/photos/01-jong-en-energiek/01-battle-ropes.jpg"
-          alt="Sporter traint met battle ropes"
+          src="/photos/02-oudere-sporters/07-bejaard.png"
+          alt="Oudere sporter traint met een dumbbell onder een bord met 'Age is just a number'"
           fill
           priority
           sizes="(min-width: 672px) 672px, 100vw"
-          className="object-cover object-[center_15%]"
+          className="object-cover object-[center_20%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10" />
         <div className="absolute left-0 right-0 bottom-0 px-4 pb-4">
-          <p className="font-label font-bold text-xs uppercase tracking-widest text-sage">{today}</p>
+          <p className="font-label font-bold text-xs uppercase tracking-widest text-rose">{today}</p>
           <h1 className="text-5xl text-paper mt-1">Dashboard</h1>
         </div>
       </div>
@@ -110,7 +110,7 @@ export default async function InstructorDashboard() {
                 href={`/instructor/workout/${w.id}`}
                 className="card-sport hover:border-ink transition-colors"
               >
-                <div className={`card-sport-bar ${w.completed_at ? 'bg-sage' : w.published ? '' : 'bg-line'}`} />
+                <div className={`card-sport-bar ${w.completed_at ? 'bg-rose' : w.published ? '' : 'bg-line'}`} />
                 <div className="card-sport-body">
                   <div className="flex items-start justify-between">
                     <div className="min-w-0 pr-3">

@@ -43,16 +43,16 @@ export default async function AthletePage() {
     <div className="space-y-6">
       <div className="relative -mx-4 -mt-6 h-44 overflow-hidden bg-ink">
         <Image
-          src="/photos/02-oudere-sporters/03-yoga-in-het-park.jpg"
-          alt="Groep sporters traint samen in het park"
+          src="/photos/02-oudere-sporters/10-bejaard.png"
+          alt="Groep oudere sporters traint samen met roze dumbbells"
           fill
           priority
           sizes="(min-width: 672px) 672px, 100vw"
-          className="object-cover object-center"
+          className="object-cover object-[center_25%]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-ink via-ink/50 to-ink/10" />
         <div className="absolute left-0 right-0 bottom-0 px-4 pb-4">
-          <p className="font-label font-bold text-xs uppercase tracking-widest text-sage">Van je instructeur</p>
+          <p className="font-label font-bold text-xs uppercase tracking-widest text-rose">Van je instructeur</p>
           <h1 className="text-5xl text-paper mt-1">Trainingen</h1>
         </div>
       </div>

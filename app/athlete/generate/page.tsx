@@ -94,13 +94,13 @@ export default function AthleteGeneratePage() {
           </div>
 
           <button onClick={() => setKneeFriendly(!kneeFriendly)}
-            className={`toggle-row ${kneeFriendly ? 'border-ink bg-mint' : 'border-line bg-surface hover:border-ink'}`}
+            className={`toggle-row ${kneeFriendly ? 'border-ink bg-blush' : 'border-line bg-surface hover:border-ink'}`}
             aria-pressed={kneeFriendly}>
             <span>
               <span className="block font-label font-bold text-sm uppercase tracking-wider">Last van mijn knieën</span>
               <span className="block text-xs text-muted mt-0.5">Oefeningen worden aangepast</span>
             </span>
-            <span className={`toggle-box ${kneeFriendly ? 'bg-ink border-ink text-paper' : 'border-line'}`}>
+            <span className={`toggle-box ${kneeFriendly ? 'bg-brand border-brand text-white' : 'border-line'}`}>
               {kneeFriendly ? '✓' : ''}
             </span>
           </button>

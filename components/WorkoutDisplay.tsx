@@ -116,7 +116,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
         >
           <div className="flex items-center justify-between px-4 py-3 bg-ink text-paper rounded-t-sm">
             <span className="font-label font-bold text-sm uppercase tracking-widest">Trainingsschema</span>
-            <span className="font-label font-bold text-xs uppercase tracking-widest text-sage">{total} oefeningen</span>
+            <span className="font-label font-bold text-xs uppercase tracking-widest text-rose">{total} oefeningen</span>
           </div>
 
           <div className="px-4">
@@ -131,7 +131,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
                 <div key={key} className="py-4 border-b border-line last:border-b-0">
                   <div className="flex items-baseline justify-between mb-2">
                     <span className="flex items-baseline">
-                      <span className="font-display text-2xl leading-none text-sage mr-2">{cfg.num}</span>
+                      <span className="font-display text-2xl leading-none text-brand mr-2">{cfg.num}</span>
                       <span className="font-display text-2xl leading-none uppercase">{cfg.label}</span>
                     </span>
                     <span className="sport-label">{section.duur}</span>
@@ -213,7 +213,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
 
         <div className="px-4 py-5">
           <h3 className="font-display text-4xl leading-none uppercase">{slide.exercise.naam}</h3>
-          <p className="inline-block mt-3 font-label font-bold text-sm uppercase tracking-wider bg-mint text-ink px-2.5 py-1 rounded-sm break-words">
+          <p className="inline-block mt-3 font-label font-bold text-sm uppercase tracking-wider bg-blush text-ink px-2.5 py-1 rounded-sm break-words">
             {slide.exercise.duur_of_sets}
           </p>
 
@@ -231,8 +231,8 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           )}
 
           {showKneeAlternatives && slide.exercise.knie_vriendelijk_alternatief && (
-            <div className="mt-5 border-l-4 border-sage bg-paper px-3 py-2.5">
-              <p className="font-label font-bold text-xs uppercase tracking-widest text-moss">Knievriendelijk alternatief</p>
+            <div className="mt-5 border-l-4 border-rose bg-paper px-3 py-2.5">
+              <p className="font-label font-bold text-xs uppercase tracking-widest text-berry">Knievriendelijk alternatief</p>
               <p className="text-sm mt-0.5">{slide.exercise.knie_vriendelijk_alternatief}</p>
             </div>
           )}

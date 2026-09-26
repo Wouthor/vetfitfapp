@@ -52,8 +52,8 @@ export default async function LibraryDetailPage({ params }: { params: { id: stri
         )}
       </div>
 
-      <div className={`rounded-sm px-4 py-3 ${fit.ok ? 'bg-mint' : 'bg-red-50 border border-red-300'}`}>
-        <p className={`font-label font-bold text-xs uppercase tracking-widest ${fit.ok ? 'text-moss' : 'text-red-700'}`}>
+      <div className={`rounded-sm px-4 py-3 ${fit.ok ? 'bg-blush' : 'bg-red-50 border border-red-300'}`}>
+        <p className={`font-label font-bold text-xs uppercase tracking-widest ${fit.ok ? 'text-berry' : 'text-red-700'}`}>
           {fit.ok ? 'Past bij je materiaal' : 'Past niet bij je materiaal'}
         </p>
         {!fit.ok && <p className="text-sm mt-1">Ontbreekt: {fit.missing.join(', ')}. Bij het maken van een training wordt dit zo goed mogelijk vervangen.</p>}

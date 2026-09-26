@@ -44,11 +44,11 @@ export default function CreateFromLibrary({ libraryId, equipment, defaultDuratio
   return (
     <div className="bg-ink text-paper rounded-sm p-4">
       <p className="font-display text-2xl uppercase leading-none">Maak hier een training van</p>
-      <p className="text-sm text-sage mt-1.5">
+      <p className="text-sm text-rose mt-1.5">
         Wordt vertaald naar het Nederlands, aangepast aan je materiaal en aangevuld tot een complete training.
       </p>
 
-      <p className="font-label font-bold text-xs uppercase tracking-widest text-sage mt-4 mb-1.5">Duur</p>
+      <p className="font-label font-bold text-xs uppercase tracking-widest text-rose mt-4 mb-1.5">Duur</p>
       <div className="grid grid-cols-3 gap-2">
         {([30, 45, 60] as Duration[]).map((d) => (
           <button
@@ -56,7 +56,7 @@ export default function CreateFromLibrary({ libraryId, equipment, defaultDuratio
             onClick={() => setDuration(d)}
             aria-pressed={duration === d}
             className={`py-2.5 rounded-sm font-label font-bold uppercase tracking-wider border-2 transition-colors ${
-              duration === d ? 'bg-paper text-ink border-paper' : 'border-ink-soft text-sage hover:border-sage'
+              duration === d ? 'bg-paper text-ink border-paper' : 'border-ink-soft text-rose hover:border-rose'
             }`}
           >
             {d} min
@@ -64,7 +64,7 @@ export default function CreateFromLibrary({ libraryId, equipment, defaultDuratio
         ))}
       </div>
 
-      <p className="font-label font-bold text-xs uppercase tracking-widest text-sage mt-3 mb-1.5">Intensiteit</p>
+      <p className="font-label font-bold text-xs uppercase tracking-widest text-rose mt-3 mb-1.5">Intensiteit</p>
       <div className="grid grid-cols-3 gap-2">
         {(['laag', 'middel', 'hoog'] as Intensity[]).map((i) => (
           <button
@@ -72,7 +72,7 @@ export default function CreateFromLibrary({ libraryId, equipment, defaultDuratio
             onClick={() => setIntensity(i)}
             aria-pressed={intensity === i}
             className={`py-2.5 rounded-sm font-label font-bold uppercase tracking-wider border-2 transition-colors ${
-              intensity === i ? 'bg-paper text-ink border-paper' : 'border-ink-soft text-sage hover:border-sage'
+              intensity === i ? 'bg-paper text-ink border-paper' : 'border-ink-soft text-rose hover:border-rose'
             }`}
           >
             {i}
@@ -81,14 +81,14 @@ export default function CreateFromLibrary({ libraryId, equipment, defaultDuratio
       </div>
 
       <label className="flex items-center text-sm mt-3">
-        <input type="checkbox" checked={kneeFriendly} onChange={(e) => setKneeFriendly(e.target.checked)} className="mr-2 w-4 h-4 accent-[#9fb8aa]" />
+        <input type="checkbox" checked={kneeFriendly} onChange={(e) => setKneeFriendly(e.target.checked)} className="mr-2 w-4 h-4 accent-[#f39ac8]" />
         Knieblessures in de groep
       </label>
 
       <button
         onClick={handleCreate}
         disabled={loading}
-        className="w-full mt-4 bg-paper text-ink hover:bg-sage font-label font-bold uppercase tracking-wider py-3.5 rounded-sm transition-colors disabled:opacity-60"
+        className="w-full mt-4 bg-brand text-white hover:bg-brand-dark font-label font-bold uppercase tracking-wider py-3.5 rounded-sm transition-colors disabled:opacity-60"
       >
         {loading ? 'Training wordt gemaakt…' : 'Training maken →'}
       </button>

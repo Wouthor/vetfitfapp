@@ -54,7 +54,7 @@ export default async function AthleteWorkoutDetailPage({ params }: { params: { i
           <div className="py-2.5 pl-3 border-l border-line"><p className="sport-number text-3xl capitalize">{w.intensity}</p><p className="sport-label">intensiteit</p></div>
           <div className="py-2.5 pl-3 border-l border-line"><p className="sport-number text-3xl">{participants.length}</p><p className="sport-label">{participants.length === 1 ? 'doet mee' : 'doen mee'}</p></div>
         </div>
-        {w.knee_friendly && <p className="sport-label text-moss mt-2">Knievriendelijk</p>}
+        {w.knee_friendly && <p className="sport-label text-berry mt-2">Knievriendelijk</p>}
       </div>
 
       <SignupButton workoutId={w.id} isSignedUp={isSignedUp} />

@@ -59,7 +59,7 @@ export default function SyncButton() {
       </div>
 
       {result && (
-        <div className="bg-mint px-3 py-2.5 mb-3 text-moss text-sm rounded-sm">
+        <div className="bg-blush px-3 py-2.5 mb-3 text-berry text-sm rounded-sm">
           {result.synced} nieuwe trainingen opgehaald, {result.skipped} waren er al ({result.total} in Drive).
           {result.errors.length > 0 && (
             <div className="mt-1 text-xs text-red-700">

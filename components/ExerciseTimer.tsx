@@ -197,7 +197,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
       >
         <span className="text-left">
           <span className="block font-label font-bold text-sm uppercase tracking-wider">Start timer</span>
-          <span className="block text-xs text-sage mt-0.5">
+          <span className="block text-xs text-rose mt-0.5">
             {isInterval
               ? `${totalRounds} rondes · ${workSeconds}s werk / ${restSeconds}s rust`
               : `${workSeconds} seconden`}
@@ -211,8 +211,8 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   // ── DONE ────────────────────────────────────────────────────────────
   if (phase === 'done') {
     return (
-      <div className="rounded-sm border-2 border-moss bg-mint px-4 py-4">
-        <p className="font-display text-3xl uppercase text-moss leading-none">Oefening klaar</p>
+      <div className="rounded-sm border-2 border-berry bg-blush px-4 py-4">
+        <p className="font-display text-3xl uppercase text-berry leading-none">Oefening klaar</p>
         <div className="flex space-x-2 mt-4">
           <button onClick={handleReset} className="btn-secondary flex-1 py-2.5 text-sm">
             Opnieuw
@@ -228,16 +228,16 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   // ── ACTIVE TIMER ────────────────────────────────────────────────────
   return (
     <div
-      className={`rounded-sm px-4 pt-3 pb-4 transition-colors ${isWork ? 'bg-ink text-paper' : 'bg-mint text-ink'}`}
+      className={`rounded-sm px-4 pt-3 pb-4 transition-colors ${isWork ? 'bg-ink text-paper' : 'bg-blush text-ink'}`}
       role="timer"
       aria-live="off"
     >
       <div className="flex items-center justify-between">
-        <span className={`font-label font-bold text-xs uppercase tracking-widest ${isWork ? 'text-sage' : 'text-moss'}`}>
+        <span className={`font-label font-bold text-xs uppercase tracking-widest ${isWork ? 'text-rose' : 'text-berry'}`}>
           {phaseLabel}{paused ? ' · gepauzeerd' : ''}
         </span>
         {isInterval && (
-          <span className={`font-label font-bold text-xs uppercase tracking-widest ${isWork ? 'text-sage' : 'text-moss'}`}>
+          <span className={`font-label font-bold text-xs uppercase tracking-widest ${isWork ? 'text-rose' : 'text-berry'}`}>
             Ronde {currentRound}/{totalRounds}
           </span>
         )}
@@ -249,7 +249,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
 
       <div className={`h-1.5 w-full ${isWork ? 'bg-ink-soft' : 'bg-paper'}`}>
         <div
-          className={`h-full ${isWork ? 'bg-paper' : 'bg-moss'}`}
+          className={`h-full ${isWork ? 'bg-paper' : 'bg-berry'}`}
           style={{ width: `${Math.max(0, Math.min(1, progress)) * 100}%`, transition: 'width 0.9s linear' }}
         />
       </div>
@@ -259,7 +259,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
           {Array.from({ length: totalRounds }).map((_, i) => (
             <span
               key={i}
-              className={`h-1 ${i < currentRound - 1 ? (isWork ? 'bg-paper' : 'bg-moss') : i === currentRound - 1 ? (isWork ? 'bg-sage' : 'bg-sage') : (isWork ? 'bg-ink-soft' : 'bg-paper')}`}
+              className={`h-1 ${i < currentRound - 1 ? (isWork ? 'bg-paper' : 'bg-berry') : i === currentRound - 1 ? (isWork ? 'bg-rose' : 'bg-rose') : (isWork ? 'bg-ink-soft' : 'bg-paper')}`}
             />
           ))}
         </div>
@@ -269,14 +269,14 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
         <button
           onClick={handlePause}
           className={`font-label font-bold text-sm uppercase tracking-wider px-5 py-2.5 rounded-sm transition-colors ${
-            isWork ? 'bg-paper text-ink hover:bg-sage' : 'bg-ink text-paper hover:bg-ink-soft'
+            isWork ? 'bg-paper text-ink hover:bg-rose' : 'bg-ink text-paper hover:bg-ink-soft'
           }`}
         >
           {paused ? 'Hervat' : 'Pauze'}
         </button>
         <button
           onClick={handleReset}
-          className={`font-label font-bold text-xs uppercase tracking-widest transition-colors ${isWork ? 'text-sage hover:text-paper' : 'text-moss hover:text-ink'}`}
+          className={`font-label font-bold text-xs uppercase tracking-widest transition-colors ${isWork ? 'text-rose hover:text-paper' : 'text-berry hover:text-ink'}`}
         >
           Stoppen
         </button>

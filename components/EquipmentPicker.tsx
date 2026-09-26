@@ -32,7 +32,7 @@ export default function EquipmentPicker({ selected, onChange }: EquipmentPickerP
               aria-pressed={active}
               className={`flex items-center justify-between px-3 py-2.5 rounded-sm text-sm font-medium transition-colors text-left border-2 ${
                 active
-                  ? 'bg-mint border-ink text-ink'
+                  ? 'bg-blush border-ink text-ink'
                   : 'bg-surface border-line text-muted hover:border-ink hover:text-ink'
               }`}
             >

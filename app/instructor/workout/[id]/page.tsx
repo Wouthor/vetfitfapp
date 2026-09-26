@@ -65,7 +65,7 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
           <div className="py-2.5 pl-3 border-l border-line"><p className="sport-number text-3xl capitalize">{w.intensity}</p><p className="sport-label">intensiteit</p></div>
           <div className="py-2.5 pl-3 border-l border-line"><p className="sport-number text-3xl">{participants.length}</p><p className="sport-label">{participants.length === 1 ? 'deelnemer' : 'deelnemers'}</p></div>
         </div>
-        {w.knee_friendly && <p className="sport-label text-moss mt-2">Knievriendelijk</p>}
+        {w.knee_friendly && <p className="sport-label text-berry mt-2">Knievriendelijk</p>}
       </div>
 
       {participants.length > 0 && (

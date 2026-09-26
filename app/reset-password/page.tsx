@@ -35,7 +35,7 @@ export default function ResetPasswordPage() {
 
         {sent ? (
           <div className="space-y-4">
-            <div className="bg-green-50 border border-green-700 rounded-sm px-4 py-4 text-moss text-center">
+            <div className="bg-green-50 border border-green-700 rounded-sm px-4 py-4 text-berry text-center">
               <p className="font-semibold">E-mail verstuurd!</p>
               <p className="text-sm mt-1">Check je inbox voor de resetlink.</p>
             </div>

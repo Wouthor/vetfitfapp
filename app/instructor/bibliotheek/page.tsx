@@ -116,7 +116,7 @@ export default async function LibraryPage({ searchParams }: { searchParams: Reco
             </select>
           </div>
           <label className="flex items-center text-sm">
-            <input type="checkbox" name="alles" value="1" defaultChecked={alles} className="mr-2 w-4 h-4 accent-[#12261e]" />
+            <input type="checkbox" name="alles" value="1" defaultChecked={alles} className="mr-2 w-4 h-4 accent-[#2a0b22]" />
             Ook trainingen tonen die niet passen bij mijn materiaal
           </label>
           <button type="submit" className="btn-primary w-full">Filteren</button>
