@@ -1,7 +1,8 @@
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase/server'
 import { fetchLibraryMeta } from '@/lib/library-db'
-import { checkEquipmentFit, type LibraryMeta } from '@/lib/library'
+import { checkEquipmentFit, isExcluded, type LibraryMeta } from '@/lib/library'
+import { LIBRARY_CATEGORIES } from '@/lib/library-categories'
 
 const SOORTEN: Record<string, { label: string; match: (w: LibraryMeta) => boolean }> = {
   'warming-up': { label: 'Warming-up', match: (w) => w.types.includes('Warm Up') },
@@ -57,22 +58,28 @@ export default async function LibraryPage({ searchParams }: { searchParams: Reco
   const duur = searchParams.duur && DUREN[searchParams.duur] ? searchParams.duur : ''
   const vorm = searchParams.vorm && VORMEN[searchParams.vorm] ? searchParams.vorm : ''
   const alles = searchParams.alles === '1'
+  const oefening = searchParams.oefening && LIBRARY_CATEGORIES.some((c) => c.id === searchParams.oefening) ? searchParams.oefening : ''
+  const zonder = searchParams.zonder && LIBRARY_CATEGORIES.some((c) => c.id === searchParams.zonder) ? searchParams.zonder : ''
+  const categoryOptions = LIBRARY_CATEGORIES.filter((c) => !isExcluded({ categories: [c.id] }))
+  const visible = all.filter((w) => !isExcluded(w))
   const shown = Math.max(PER_PAGE, Number(searchParams.n) || PER_PAGE)
 
-  const rows = all
+  const rows = visible
     .map((w) => ({ w, fit: checkEquipmentFit(w.equipment, selected) }))
     .filter(({ w, fit }) =>
       (alles || fit.ok) &&
       (!soort || SOORTEN[soort].match(w)) &&
       (!duur || ((w.duration_min ?? 0) <= DUREN[duur].hi && (w.duration_max ?? 999) >= DUREN[duur].lo)) &&
       (!vorm || w.features.includes(VORMEN[vorm].feature)) &&
+      (!oefening || w.categories.includes(oefening)) &&
+      (!zonder || !w.categories.includes(zonder)) &&
       (!q || w.title.toLowerCase().includes(q) || w.tags.some((t) => t.toLowerCase().includes(q)))
     )
     .sort((a, b) => sortKey(a.w.title).localeCompare(sortKey(b.w.title)))
 
   const params = (extra: Record<string, string>) => {
     const p = new URLSearchParams()
-    const base: Record<string, string> = { q: searchParams.q ?? '', soort, duur, vorm, alles: alles ? '1' : '' }
+    const base: Record<string, string> = { q: searchParams.q ?? '', soort, duur, vorm, oefening, zonder, alles: alles ? '1' : '' }
     for (const [k, v] of Object.entries({ ...base, ...extra })) if (v) p.set(k, v)
     return `?${p.toString()}`
   }
@@ -87,8 +94,11 @@ export default async function LibraryPage({ searchParams }: { searchParams: Reco
         </Link>
         <h1 className="text-5xl mt-3">Bibliotheek</h1>
         <p className="text-muted text-sm mt-1">
-          {all.length} trainingen uit BootCraft. Kies er een en maak er in één keer een complete training van, vertaald en aangepast aan je materiaal.
+          {visible.length} trainingen uit BootCraft. Kies er een en maak er in één keer een complete training van, vertaald en aangepast aan je materiaal.
         </p>
+        <Link href="/instructor/bibliotheek/overzicht" className="font-label font-bold text-xs uppercase tracking-widest text-brand hover:text-brand-dark inline-block mt-2">
+          Overzicht per soort oefening →
+        </Link>
       </div>
 
       {all.length === 0 && (
@@ -113,6 +123,16 @@ export default async function LibraryPage({ searchParams }: { searchParams: Reco
             <select name="vorm" defaultValue={vorm} className={selectClass} aria-label="Vorm">
               <option value="">Vorm</option>
               {Object.entries(VORMEN).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+            </select>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <select name="oefening" defaultValue={oefening} className={selectClass} aria-label="Met oefening">
+              <option value="">Met oefening…</option>
+              {categoryOptions.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+            </select>
+            <select name="zonder" defaultValue={zonder} className={selectClass} aria-label="Zonder oefening">
+              <option value="">Zonder oefening…</option>
+              {categoryOptions.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
             </select>
           </div>
           <label className="flex items-center text-sm">

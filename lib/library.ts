@@ -112,6 +112,7 @@ export interface LibraryMeta {
   equipment: string[]
   tags: string[]
   has_burpees: boolean
+  categories: string[]
 }
 
 export type LibraryRole = 'warming-up' | 'hoofddeel' | 'afsluiter'
@@ -143,7 +144,16 @@ function shuffle<T>(arr: T[]): T[] {
   return a
 }
 
+// Soorten oefeningen die helemaal uit de bibliotheek zijn gehaald (wens van de instructeur).
+// Uitbreiden met een id uit lib/library-categories.ts.
+export const EXCLUDED_CATEGORIES: string[] = ['boksen', 'partner-contact', 'muziek']
+
+export function isExcluded(w: Pick<LibraryMeta, 'categories'>): boolean {
+  return (w.categories ?? []).some((c) => EXCLUDED_CATEGORIES.includes(c))
+}
+
 export function isUsable(w: LibraryMeta, selected: string[]): boolean {
+  if (isExcluded(w)) return false
   if (w.types.includes('Fitness Test') || w.tags.includes('virtual')) return false
   return checkEquipmentFit(w.equipment, selected).ok
 }

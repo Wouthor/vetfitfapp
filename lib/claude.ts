@@ -5,6 +5,8 @@ import type { Duration, Intensity, WorkoutContent, Exercise } from './types'
 // Uitbreiden: voeg een naam en een zoekpatroon toe.
 const BANNED_EXERCISES: { name: string; pattern: RegExp }[] = [
   { name: 'burpees (en varianten, zoals half burpees of burpee broad jumps)', pattern: /burpee/i },
+  { name: 'partneroefeningen met lichamelijk contact (kruiwagen, elkaar dragen of optillen, bokspringen over elkaar heen)', pattern: /\b(kruiwagen\w*|wheelbarrows?|piggy ?backs?|leap ?frogs?|bokspring\w*|fireman'?s carry|elkaar (dragen|optillen))\b/i },
+  { name: 'boksen en stootbewegingen (jab, hook, uppercut, schaduwboksen, punches, ook in combinatie zoals squat met punches)', pattern: /\b(boks\w*|schaduwboks\w*|jabs?|uppercuts?|punch\w*|stoten|stoot)\b/i },
 ]
 
 const BANNED_RULE = `- Gebruik NOOIT deze oefeningen, ook niet als een voorbeeldtraining, webbron of speciale wens ze noemt: ${BANNED_EXERCISES.map((b) => b.name).join('; ')}. Kies in dat geval een andere oefening.`

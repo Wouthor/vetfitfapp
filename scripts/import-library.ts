@@ -6,6 +6,7 @@
 import fs from 'fs'
 import path from 'path'
 import { createClient } from '@supabase/supabase-js'
+import { categorize } from '../lib/library-categories'
 
 const ROOT = path.join(process.cwd(), 'bootcraft-app-data')
 
@@ -61,6 +62,7 @@ async function main() {
       markdown,
       links: t.links ?? [],
       has_burpees: /burpee/i.test(markdown),
+      categories: categorize({ title: t.title, markdown, types: t.types ?? [], features: t.features ?? [], equipment: t.equipment ?? [], tags: t.tags ?? [] }),
     }
   })
 

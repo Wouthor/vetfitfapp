@@ -3,7 +3,8 @@ import { notFound } from 'next/navigation'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { createClient } from '@/lib/supabase/server'
-import { checkEquipmentFit } from '@/lib/library'
+import { checkEquipmentFit, isExcluded } from '@/lib/library'
+import { categoryLabel } from '@/lib/library-categories'
 import CreateFromLibrary from '@/components/CreateFromLibrary'
 import type { Duration } from '@/lib/types'
 
@@ -63,7 +64,25 @@ export default async function LibraryDetailPage({ params }: { params: { id: stri
         {(w.equipment ?? []).length > 0 && <p className="text-xs text-muted mt-1.5">Origineel materiaal: {(w.equipment as string[]).join(', ')}</p>}
       </div>
 
-      <CreateFromLibrary libraryId={w.id} equipment={selected} defaultDuration={defaultDuration} />
+      {isExcluded(w) ? (
+        <div className="rounded-sm px-4 py-3 bg-sunken border border-line">
+          <p className="font-label font-bold text-xs uppercase tracking-widest text-muted">Uitgesloten</p>
+          <p className="text-sm mt-1">Deze training bevat {(w.categories as string[]).filter((c) => isExcluded({ categories: [c] })).map(categoryLabel).join(', ').toLowerCase()} en wordt daarom niet gebruikt.</p>
+        </div>
+      ) : (
+        <CreateFromLibrary libraryId={w.id} equipment={selected} defaultDuration={defaultDuration} />
+      )}
+
+      {(w.categories ?? []).length > 0 && (
+        <div>
+          <p className="sport-label mb-1.5">Soorten oefeningen</p>
+          <div className="flex flex-wrap -m-0.5">
+            {(w.categories as string[]).map((c) => (
+              <Link key={c} href={`/instructor/bibliotheek?oefening=${c}`} className="m-0.5 badge-draft hover:border-ink hover:text-ink">{categoryLabel(c)}</Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="card">
         <p className="sport-label mb-3">Originele training (Engels)</p>

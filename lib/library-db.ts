@@ -1,7 +1,7 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { LibraryMeta } from './library'
 
-export const LIBRARY_META_COLUMNS = 'id, title, duration_label, duration_min, duration_max, types, features, equipment, tags, has_burpees'
+export const LIBRARY_META_COLUMNS = 'id, title, duration_label, duration_min, duration_max, types, features, equipment, tags, has_burpees, categories'
 
 // Supabase geeft maximaal 1000 rijen per verzoek; haal de bibliotheek in delen op
 export async function fetchLibraryMeta(supabase: SupabaseClient): Promise<LibraryMeta[]> {
