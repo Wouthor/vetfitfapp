@@ -37,3 +37,6 @@ next-env.d.ts
 /bootcraft-app-data/
 /downloads/
 /BootCraft-*.zip
+
+# Bewaarde foto's die de app niet gebruikt
+/foto-archief/
