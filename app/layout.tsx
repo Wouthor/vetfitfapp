@@ -7,8 +7,18 @@ const body = Archivo({ subsets: ['latin'], weight: ['400', '500', '700'], variab
 const label = Archivo_Narrow({ subsets: ['latin'], weight: ['500', '700'], variable: '--font-label', display: 'swap' })
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL ?? 'https://vetfitfapp.vercel.app'),
   title: 'VetFitFapp',
-  description: 'Genereer en beheer bootcamp trainingen',
+  description: 'Bootcamptrainingen van VetFit: bekijk de training, meld je aan en train mee.',
+  // Voorvertoning bij het delen van de link (bijv. in WhatsApp); het plaatje is app/opengraph-image.jpg
+  openGraph: {
+    title: 'VetFitFapp',
+    description: 'Bekijk de training van deze week en meld je aan.',
+    siteName: 'VetFitFapp',
+    locale: 'nl_NL',
+    type: 'website',
+  },
+  appleWebApp: { title: 'VetFitFapp' },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
