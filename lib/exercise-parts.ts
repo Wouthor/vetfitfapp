@@ -121,7 +121,7 @@ export function groupParts(ex: Exercise): PartGroup[] | null {
   for (const p of parts) {
     const label = uselessLabels ? null : p.groep?.trim() || null
     let g = groups[groups.length - 1]
-    if (!g || g.label !== label) { g = { label, opzet: null, items: [] }; groups.push(g) }
+    if (!g || g.label !== label) { g = { label, opzet: null, items: [], note: !!label && NOTE_LABEL.test(label) }; groups.push(g) }
     // "Resistance band rows – staand, band onder voeten" → naam + uitleg eronder
     let naam = p.naam.trim()
     let detail: string | null = null

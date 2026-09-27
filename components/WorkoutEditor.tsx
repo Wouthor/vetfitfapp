@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import type { WorkoutContent, Exercise, Intensity } from '@/lib/types'
+import type { WorkoutContent, Exercise, ExercisePart, Intensity } from '@/lib/types'
+import { parseSetsText } from '@/lib/exercise-parts'
 
 interface WorkoutEditorProps {
   workoutId: string
@@ -32,6 +33,89 @@ const sectionConfig = {
 } as const
 
 type SectionKey = keyof typeof sectionConfig
+
+const INPUT = 'bg-surface border border-line rounded-sm px-2.5 py-2 text-ink text-sm focus:outline-none focus:border-brand placeholder-faint'
+
+// Losse oefeningen binnen een blok bewerken (ingeklapt, want wordt niet vaak gebruikt)
+function PartsEditor({ exercise, onChange }: { exercise: Exercise; onChange: (updated: Exercise) => void }) {
+  const parts: ExercisePart[] = exercise.onderdelen ?? []
+  const [open, setOpen] = useState(false)
+  const parsed = parts.length ? null : parseSetsText(exercise.duur_of_sets)
+
+  function setParts(next: ExercisePart[]) {
+    onChange({ ...exercise, onderdelen: next.length ? next : null })
+  }
+  function update(i: number, patch: Partial<ExercisePart>) {
+    setParts(parts.map((p, j) => (j === i ? { ...p, ...patch } : p)))
+  }
+
+  // Oude blokken (alles in één tekst) omzetten naar losse regels; de opzet per ronde gaat mee in het groepslabel
+  function convertFromText() {
+    if (!parsed) return
+    const next: ExercisePart[] = parsed.flatMap((g) => {
+      const groep = g.note ? null : [g.label, g.label ? g.opzet : null].filter(Boolean).join(' · ') || null
+      if (g.note) return [{ groep: g.label, aantal: null, naam: g.items[0]?.naam ?? '' }]
+      return g.items.map((it) => ({ groep, aantal: it.aantal, naam: it.detail ? `${it.naam} (${it.detail})` : it.naam }))
+    })
+    const opzet = parsed.length === 1 && !parsed[0].label ? parsed[0].opzet ?? '' : ''
+    onChange({ ...exercise, onderdelen: next, duur_of_sets: opzet })
+    setOpen(true)
+  }
+
+  if (!parts.length) {
+    return parsed ? (
+      <button onClick={convertFromText} className="w-full py-2 rounded-sm border border-line text-sm font-medium hover:border-ink transition-colors">
+        Omzetten naar losse oefeningen ({parsed.reduce((n, g) => n + g.items.length, 0)})
+      </button>
+    ) : (
+      <button
+        onClick={() => { setParts([{ groep: null, aantal: '', naam: '' }]); setOpen(true) }}
+        className="text-sm text-muted hover:text-ink underline underline-offset-2"
+      >
+        + Losse oefeningen toevoegen
+      </button>
+    )
+  }
+
+  return (
+    <div className="border border-line rounded-sm">
+      <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between px-3 py-2 text-sm font-medium" aria-expanded={open}>
+        <span>Oefeningen in dit blok ({parts.length})</span>
+        <span aria-hidden="true" className="text-muted">{open ? '▲' : '▼'}</span>
+      </button>
+      {open && (
+        <div className="border-t border-line p-2 space-y-2">
+          {parts.map((p, i) => (
+            <div key={i} className="grid gap-1.5 pb-2 border-b border-line last:border-b-0" style={{ gridTemplateColumns: '4.5rem minmax(0,1fr) auto' }}>
+              <input value={p.aantal ?? ''} onChange={(e) => update(i, { aantal: e.target.value })} placeholder="Aantal" aria-label="Aantal" className={INPUT} />
+              <input value={p.naam} onChange={(e) => update(i, { naam: e.target.value })} placeholder="Oefening, bijv. push-ups" aria-label="Oefening" className={INPUT} />
+              <button onClick={() => setParts(parts.filter((_, j) => j !== i))} className="text-red-700 hover:text-red-900 px-2" aria-label="Verwijder deze oefening">
+                <span aria-hidden="true" className="text-lg leading-none">×</span>
+              </button>
+              <input
+                value={p.groep ?? ''}
+                onChange={(e) => update(i, { groep: e.target.value || null })}
+                placeholder="Ronde of station (optioneel)"
+                aria-label="Ronde of station"
+                className={`${INPUT} text-xs py-1.5`}
+                style={{ gridColumn: '1 / 3' }}
+              />
+            </div>
+          ))}
+          <button
+            onClick={() => setParts([...parts, { groep: parts[parts.length - 1]?.groep ?? null, aantal: '', naam: '' }])}
+            className="w-full py-2 border border-dashed border-line rounded-sm text-sm text-muted hover:text-ink hover:border-ink transition-colors"
+          >
+            + Oefening toevoegen
+          </button>
+          {exercise.duur_of_sets.length > 45 && (
+            <p className="text-xs text-muted">Tip: maak &ldquo;Sets/tijd&rdquo; kort (bijv. &ldquo;3 rondes&rdquo;), anders staan de oefeningen er dubbel.</p>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function ExerciseEditor({
   exercise,
@@ -82,13 +166,13 @@ function ExerciseEditor({
           value={exercise.naam}
           onChange={(e) => onChange({ ...exercise, naam: e.target.value })}
           placeholder="Naam oefening"
-          className="flex-1 bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
+          className="flex-1 min-w-0 bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
         />
         <input
           value={exercise.duur_of_sets}
           onChange={(e) => onChange({ ...exercise, duur_of_sets: e.target.value })}
           placeholder="Sets/tijd"
-          className="w-28 bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
+          className="w-24 min-w-0 bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
         />
         <button
           onClick={onRemove}
@@ -112,6 +196,7 @@ function ExerciseEditor({
         placeholder="Knie-vriendelijk alternatief"
         className="w-full bg-void-input border border-void-border rounded-sm px-3 py-2 text-ink text-sm focus:outline-none focus:border-neon-400 placeholder-faint"
       />
+      <PartsEditor exercise={exercise} onChange={onChange} />
       <button
         onClick={handleReplace}
         disabled={replacing}
