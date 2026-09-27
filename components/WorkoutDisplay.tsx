@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react'
 import type { WorkoutContent, Exercise } from '@/lib/types'
 import ExerciseTimer from '@/components/ExerciseTimer'
+import { exerciseParts, type PartGroup } from '@/lib/exercise-parts'
 
 interface WorkoutDisplayProps {
   workout: WorkoutContent
@@ -31,6 +32,44 @@ function formatDescription(text: string): string[] {
     .map((l) => l.replace(/^[-•]\s*/, '').trim())
     .filter((l) => l.length > 2)
   return lines
+}
+
+const capitalize = (t: string) => (t ? t[0].toUpperCase() + t.slice(1) : t)
+
+// Blok met meerdere oefeningen: per ronde een kopregel, daaronder elke oefening op een eigen regel
+function ExerciseParts({ groups }: { groups: PartGroup[] }) {
+  return (
+    <div className="mt-4 border-2 border-ink rounded-sm overflow-hidden">
+      {groups.map((g, gi) => g.note ? (
+        <p key={gi} className="border-t-2 border-ink bg-blush px-3 py-2 text-sm">
+          <span className="font-label font-bold text-xs uppercase tracking-widest mr-2">{g.label}</span>
+          {g.items[0]?.naam}
+        </p>
+      ) : (
+        <div key={gi} className={gi > 0 ? 'border-t-2 border-ink' : ''}>
+          {(g.label || g.opzet) && (
+            <div className="flex items-baseline justify-between bg-ink text-paper px-3 py-1.5">
+              <span className="font-label font-bold text-xs uppercase tracking-widest">{g.label ?? g.opzet}</span>
+              {g.label && g.opzet && <span className="font-label font-bold text-xs uppercase tracking-widest text-rose">{g.opzet}</span>}
+            </div>
+          )}
+          <ul>
+            {g.items.map((item, i) => (
+              <li key={i} className={`flex items-baseline px-3 py-2.5 ${i > 0 ? 'border-t border-line' : ''}`}>
+                <span className={`font-display leading-none text-brand min-w-[3.5rem] pr-3 flex-shrink-0 ${(item.aantal ?? '').length > 5 ? 'text-lg' : 'text-2xl'}`} style={{ fontVariantNumeric: 'tabular-nums' }}>
+                  {item.aantal ?? '–'}
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-lg font-bold leading-snug">{capitalize(item.naam)}</span>
+                  {item.detail && <span className="block text-sm text-muted leading-snug mt-0.5">{item.detail}</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+  )
 }
 
 export default function WorkoutDisplay({ workout, showKneeAlternatives }: WorkoutDisplayProps) {
@@ -142,7 +181,11 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
                         <span className="font-label font-bold text-xs text-faint w-6 flex-shrink-0" style={{ fontVariantNumeric: 'tabular-nums' }}>{i + 1}</span>
                         <span className="flex-1 min-w-0">
                           <span className="block text-sm font-medium leading-snug">{ex.naam}</span>
-                          {ex.duur_of_sets && <span className="block text-xs text-muted leading-snug mt-0.5">{ex.duur_of_sets}</span>}
+                          {(() => {
+                            const parts = exerciseParts(ex)
+                            const sub = parts ? parts.filter((g) => !g.note).flatMap((g) => g.items.map((it) => capitalize(it.naam))).join(' · ') : ex.duur_of_sets
+                            return sub ? <span className="block text-xs text-muted leading-snug mt-0.5">{sub}</span> : null
+                          })()}
                         </span>
                       </li>
                     ))}
@@ -169,6 +212,9 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
   const slide = slides[current]
   const config = sectionConfig[slide.sectionKey]
   const bullets = formatDescription(slide.exercise.beschrijving)
+  const parts = exerciseParts(slide.exercise)
+  // Bij apart aangeleverde onderdelen is duur_of_sets een korte opzet (bijv. "3 rondes · eigen tempo"): die tonen we ook
+  const showSetsLabel = !!slide.exercise.duur_of_sets && (!parts || !!slide.exercise.onderdelen?.length)
 
   return (
     <div className="space-y-3">
@@ -213,9 +259,17 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
 
         <div className="px-4 py-5">
           <h3 className="font-display text-4xl leading-none uppercase">{slide.exercise.naam}</h3>
-          <p className="inline-block mt-3 font-label font-bold text-sm uppercase tracking-wider bg-blush text-ink px-2.5 py-1 rounded-sm break-words">
-            {slide.exercise.duur_of_sets}
-          </p>
+          {showSetsLabel && (slide.exercise.duur_of_sets.length > 45 ? (
+            // Lange uitleg die geen lijst is: gewone letters, goed leesbaar
+            <p className="mt-3 border-l-4 border-brand bg-blush px-3 py-2.5 text-[15px] font-medium leading-snug">
+              {slide.exercise.duur_of_sets}
+            </p>
+          ) : (
+            <p className="inline-block mt-3 font-label font-bold text-sm uppercase tracking-wider bg-blush text-ink px-2.5 py-1 rounded-sm break-words">
+              {slide.exercise.duur_of_sets}
+            </p>
+          ))}
+          {parts && <ExerciseParts groups={parts} />}
 
           {bullets.length > 1 ? (
             <ul className="space-y-2 mt-4">

@@ -3,6 +3,7 @@ import path from 'path'
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer'
 import type { WorkoutContent, WorkoutSection, Exercise } from '@/lib/types'
 import { splitTitle } from '@/lib/format'
+import { exerciseParts } from '@/lib/exercise-parts'
 
 // Zelfde lettertypen als de app; de bestanden komen uit de @fontsource-pakketten
 const fontFile = (pkg: string, file: string) => path.join(process.cwd(), 'node_modules', '@fontsource', pkg, 'files', file)
@@ -123,6 +124,13 @@ const styles = StyleSheet.create({
   },
   kneeLabel: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 7.5, color: C.berry, letterSpacing: 1.2, textTransform: 'uppercase' },
   kneeText: { fontSize: 9, lineHeight: 1.3, color: C.inkSoft },
+  partsBox: { marginTop: 4, borderWidth: 1, borderColor: C.ink },
+  partsHead: { flexDirection: 'row', justifyContent: 'space-between', backgroundColor: C.ink, paddingHorizontal: 5, paddingVertical: 2 },
+  partsHeadText: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 7.5, color: C.paper, letterSpacing: 1, textTransform: 'uppercase' },
+  partsHeadSub: { fontFamily: 'Archivo Narrow', fontWeight: 700, fontSize: 7.5, color: C.rose, letterSpacing: 1, textTransform: 'uppercase' },
+  partRow: { flexDirection: 'row', paddingHorizontal: 5, paddingVertical: 2.5, borderTopWidth: 0.5, borderTopColor: C.line },
+  partQty: { width: 34, fontFamily: 'Anton', fontSize: 10, color: C.brand },
+  partName: { flex: 1, fontWeight: 700, fontSize: 9.5 },
   footer: {
     position: 'absolute',
     bottom: 20,
@@ -156,14 +164,43 @@ function toBullets(text: string): string[] {
 
 function ExercisePDF({ exercise, index, showKnee }: { exercise: Exercise; index: number; showKnee: boolean }) {
   const bullets = toBullets(exercise.beschrijving)
+  const parts = exerciseParts(exercise)
+  const showSets = !!exercise.duur_of_sets && (!parts || !!exercise.onderdelen?.length)
   return (
     <View style={styles.exercise} wrap={false}>
       <Text style={styles.exNum}>{index + 1}</Text>
       <View style={styles.exBody}>
         <View style={styles.exHeadRow}>
           <Text style={styles.exName}>{clean(exercise.naam)}</Text>
-          {exercise.duur_of_sets ? <Text style={styles.exSets}>{clean(exercise.duur_of_sets)}</Text> : null}
+          {showSets ? <Text style={styles.exSets}>{clean(exercise.duur_of_sets)}</Text> : null}
         </View>
+        {parts ? (
+          <View style={styles.partsBox}>
+            {parts.map((g, gi) => g.note ? (
+              <Text key={gi} style={{ fontSize: 8.5, paddingHorizontal: 5, paddingVertical: 3, backgroundColor: C.blush, borderTopWidth: 0.5, borderTopColor: C.line }}>
+                {`${clean(g.label)}: ${clean(g.items[0]?.naam)}`}
+              </Text>
+            ) : (
+              <View key={gi}>
+                {g.label || g.opzet ? (
+                  <View style={styles.partsHead}>
+                    <Text style={styles.partsHeadText}>{clean(g.label ?? g.opzet)}</Text>
+                    {g.label && g.opzet ? <Text style={styles.partsHeadSub}>{clean(g.opzet)}</Text> : null}
+                  </View>
+                ) : null}
+                {g.items.map((it, i) => (
+                  <View key={i} style={styles.partRow}>
+                    <Text style={styles.partQty}>{clean(it.aantal ?? '–')}</Text>
+                    <Text style={styles.partName}>
+                      {clean(it.naam)}
+                      {it.detail ? <Text style={{ fontWeight: 400, color: C.muted }}>{`  ${clean(it.detail)}`}</Text> : null}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        ) : null}
         {bullets.map((b, i) => (
           <View key={i} style={styles.bulletRow}>
             <View style={styles.bulletDash} />

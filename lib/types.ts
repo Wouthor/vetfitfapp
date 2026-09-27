@@ -16,12 +16,20 @@ export interface ExerciseTimer {
   rounds?: number
 }
 
+// Eén losse oefening binnen een blok, bijv. { groep: 'Ronde 1', aantal: '5', naam: 'push-ups' }
+export interface ExercisePart {
+  naam: string
+  aantal?: string | null
+  groep?: string | null
+}
+
 export interface Exercise {
   naam: string
   beschrijving: string
   duur_of_sets: string
   knie_vriendelijk_alternatief: string
   timer?: ExerciseTimer | null
+  onderdelen?: ExercisePart[] | null
 }
 
 export interface WorkoutSection {

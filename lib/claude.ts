@@ -12,7 +12,8 @@ const BANNED_EXERCISES: { name: string; pattern: RegExp }[] = [
 const BANNED_RULE = `- Gebruik NOOIT deze oefeningen, ook niet als een voorbeeldtraining, webbron of speciale wens ze noemt: ${BANNED_EXERCISES.map((b) => b.name).join('; ')}. Kies in dat geval een andere oefening.`
 
 function isBanned(ex: Exercise): boolean {
-  const text = `${ex.naam} ${ex.beschrijving} ${ex.duur_of_sets}`
+  const parts = (ex.onderdelen ?? []).map((p) => p?.naam ?? '').join(' ')
+  const text = `${ex.naam} ${ex.beschrijving} ${ex.duur_of_sets} ${parts}`
   return BANNED_EXERCISES.some((b) => b.pattern.test(text))
 }
 
@@ -93,6 +94,7 @@ ${library.length ? `- Bouw de training vooral op uit de bibliotheektrainingen: d
 - Varieer de oefeningen, gebruik de voorbeelden als basis maar wees creatief
 - Gebruik ALLEEN het beschikbare materiaal in de oefeningen — geen materiaal dat niet in de lijst staat
 ${chatfit ? '- Houd GOED rekening met de speciale wens van de ChatFit instructie — dit heeft prioriteit' : ''}
+- Is een item een blok, circuit of ronde met meerdere oefeningen? Zet dan ELKE oefening apart in "onderdelen" (naam = alleen de korte naam van de oefening, zonder uitleg; aantal = herhalingen, tijd of afstand; groep = "Ronde 1", "Station 2" enz., alleen als er echt meerdere rondes of stations zijn, anders null). Uitleg over de uitvoering hoort in "beschrijving". Houd "duur_of_sets" kort: alleen de opzet, bijv. "3 rondes · eigen tempo" of "10 sets per ronde". Voor een losse oefening is "onderdelen" null
 - Pas de intensiteit aan: laag = meer rust, middel = standaard, hoog = minder rust en meer sets
 - Schrijf in het Nederlands
 - Houd beschrijvingen kort en puntsgewijs: gebruik 2-4 korte zinnen gescheiden door ". " (geen lange lappen tekst)
@@ -115,10 +117,15 @@ VEREISTE JSON-STRUCTUUR:
           "work_seconds": 40,
           "rest_seconds": 20,
           "rounds": 3
-        }
+        },
+        "onderdelen": null
       }
     ]
   },
+  (voorbeeld van een blok met meerdere oefeningen in het hoofddeel:
+   { "naam": "Blok 1 – Kracht", "duur_of_sets": "3 rondes · eigen tempo", "onderdelen": [
+     { "groep": "Ronde 1", "aantal": "5", "naam": "push-ups" }, { "groep": "Ronde 1", "aantal": "5", "naam": "squats" },
+     { "groep": "Ronde 2", "aantal": "10 m", "naam": "walking lunges" } ], ... })
   "hoofddeel": {
     "duur": "${mainMinutes} minuten",
     "oefeningen": [...]
@@ -260,7 +267,7 @@ CONTEXT:
 - Beschikbaar materiaal: ${equipment.length > 0 ? equipment.join(', ') : 'geen specifiek materiaal (alleen lichaamsgewicht)'}
 
 INSTRUCTIES:
-- Bedenk een andere oefening dan de huidige, passend bij hetzelfde onderdeel van de training
+- Bedenk een andere oefening dan de huidige, passend bij hetzelfde onderdeel van de training. Is de huidige een blok met meerdere oefeningen, maak dan een vergelijkbaar blok en zet de oefeningen apart in "onderdelen"
 ${BANNED_RULE}
 - Gebruik ALLEEN het beschikbare materiaal — geen materiaal dat niet in de lijst staat
 - Geef ALTIJD een knie-vriendelijk alternatief
@@ -271,7 +278,8 @@ ${BANNED_RULE}
   "beschrijving": "hoe voer je de oefening uit",
   "duur_of_sets": "bijv. 3x10 of 3 ronden: 40s werk / 20s rust",
   "knie_vriendelijk_alternatief": "alternatieve oefening zonder kniebelasting",
-  "timer": { "type": "interval", "work_seconds": 40, "rest_seconds": 20, "rounds": 3 } of null bij een rep-oefening
+  "timer": { "type": "interval", "work_seconds": 40, "rest_seconds": 20, "rounds": 3 } of null bij een rep-oefening,
+  "onderdelen": null, of bij een blok met meerdere oefeningen een lijst zoals [{ "groep": null, "aantal": "5", "naam": "push-ups" }]: naam kort en zonder uitleg, groep alleen bij meerdere rondes of stations (houd duur_of_sets dan kort)
 }`
 
   const message = await getClient().messages.create({
