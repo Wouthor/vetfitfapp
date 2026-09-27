@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Link from 'next/link'
 import AuthShell from '@/components/AuthShell'
@@ -10,7 +10,12 @@ export default function ResetPasswordPage() {
   const [loading, setLoading] = useState(false)
   const [sent, setSent] = useState(false)
   const [error, setError] = useState('')
+  const [linkExpired, setLinkExpired] = useState(false)
   const supabase = createClient()
+
+  useEffect(() => {
+    setLinkExpired(new URLSearchParams(window.location.search).get('fout') === 'verlopen')
+  }, [])
 
   async function handleReset(e: React.FormEvent) {
     e.preventDefault()
@@ -32,6 +37,13 @@ export default function ResetPasswordPage() {
 
   return (
     <AuthShell title="Wachtwoord vergeten" subtitle="Vul je e-mailadres in, dan sturen we je een resetlink.">
+
+        {linkExpired && !sent && (
+          <div className="bg-blush border border-berry/40 rounded-sm px-4 py-3 text-sm mb-4">
+            <p className="font-bold">Deze resetlink werkt niet meer</p>
+            <p className="mt-1">Hij is verlopen of al gebruikt. Vraag hieronder een nieuwe aan en gebruik de nieuwste mail.</p>
+          </div>
+        )}
 
         {sent ? (
           <div className="space-y-4">

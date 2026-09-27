@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import AuthShell from '@/components/AuthShell'
@@ -11,8 +12,13 @@ export default function UpdatePasswordPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [status, setStatus] = useState<'checking' | 'ok' | 'none'>('checking')
   const router = useRouter()
   const supabase = createClient()
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setStatus(data.user ? 'ok' : 'none'))
+  }, [])
 
   async function handleUpdate(e: React.FormEvent) {
     e.preventDefault()
@@ -36,12 +42,29 @@ export default function UpdatePasswordPage() {
       setLoading(false)
     } else {
       setSuccess(true)
-      setTimeout(() => router.push('/login'), 2000)
+      // Uitloggen en opnieuw laten inloggen met het nieuwe wachtwoord, zodat er geen oude inlog blijft hangen
+      setTimeout(async () => {
+        await supabase.auth.signOut()
+        router.push('/login')
+      }, 2000)
     }
   }
 
   return (
     <AuthShell title="Nieuw wachtwoord" subtitle="Kies een nieuw wachtwoord voor je account.">
+      {status === 'checking' && <p className="text-muted">Even controleren…</p>}
+
+      {status === 'none' && (
+        <div className="space-y-4">
+          <div className="bg-blush border border-berry/40 rounded-sm px-4 py-3 text-sm">
+            <p className="font-bold">Deze resetlink werkt niet (meer)</p>
+            <p className="mt-1">De link is verlopen of al gebruikt. Vraag een nieuwe aan en open de nieuwste mail.</p>
+          </div>
+          <Link href="/reset-password" className="btn-primary w-full text-center block">Nieuwe link aanvragen</Link>
+        </div>
+      )}
+
+      {status === 'ok' && (<>
 
         {success ? (
           <div className="bg-green-50 border border-green-700 rounded-sm px-4 py-4 text-berry text-center">
@@ -85,6 +108,7 @@ export default function UpdatePasswordPage() {
             </button>
           </form>
         )}
+      </>)}
     </AuthShell>
   )
 }

@@ -29,12 +29,15 @@ export async function middleware(request: NextRequest) {
   const isPublicPath = pathname === '/login' || pathname === '/register' || pathname === '/reset-password' || pathname === '/update-password' || pathname.startsWith('/api/auth')
 
   if (!session && !isPublicPath) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    // Eventueel ververste inlogcookies meesturen met de doorverwijzing
+    const res = NextResponse.redirect(new URL('/login', request.url))
+    supabaseResponse.cookies.getAll().forEach((c) => res.cookies.set(c))
+    return res
   }
 
-  if (session && pathname === '/login') {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
+  // Bewust géén doorverwijzing van /login naar / als er een cookie is: die cookie kan ongeldig zijn
+  // (bijv. na een wachtwoordwijziging), en dan stuurt de startpagina weer terug naar /login: een eindeloze lus.
+  // Het inlogscherm controleert zelf bij Supabase of iemand al is ingelogd.
 
   return supabaseResponse
 }
