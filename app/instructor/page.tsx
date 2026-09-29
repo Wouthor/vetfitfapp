@@ -4,6 +4,7 @@ import Image from 'next/image'
 import { randomHeroPhoto } from '@/lib/photos'
 import { splitTitle, formatWorkoutDate } from '@/lib/format'
 import WhatsAppReminderButton from '@/components/WhatsAppReminderButton'
+import SwipeToDelete from '@/components/SwipeToDelete'
 
 export default async function InstructorDashboard() {
   const supabase = await createClient()
@@ -109,16 +110,17 @@ export default async function InstructorDashboard() {
 
       {recentWorkouts && recentWorkouts.length > 0 && (
         <div>
-          <div className="flex items-baseline justify-between mb-3">
+          <div className="flex items-baseline justify-between">
             <h2 className="text-3xl text-ink">Recente trainingen</h2>
             <Link href="/instructor/trainingen" className="font-label font-bold text-xs uppercase tracking-widest text-muted hover:text-ink">
               Alle trainingen →
             </Link>
           </div>
+          <p className="text-xs text-muted mt-1 mb-3">Veeg een training naar links om hem te verwijderen.</p>
           <div className="space-y-2">
             {recentWorkouts.map((w) => (
+              <SwipeToDelete key={w.id} workoutId={w.id} name={splitTitle(w.title).name} confirmFirst={w.published && !w.completed_at}>
               <Link
-                key={w.id}
                 href={`/instructor/workout/${w.id}`}
                 className="card-sport hover:border-ink transition-colors"
               >
@@ -157,6 +159,7 @@ export default async function InstructorDashboard() {
                   </div>
                 </div>
               </Link>
+              </SwipeToDelete>
             ))}
           </div>
         </div>

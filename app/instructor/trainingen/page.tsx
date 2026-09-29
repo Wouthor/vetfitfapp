@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { splitTitle, formatWorkoutDate } from '@/lib/format'
+import SwipeToDelete from '@/components/SwipeToDelete'
 
 type Row = {
   id: string
@@ -44,7 +45,7 @@ export default async function AllWorkoutsPage() {
           ← Dashboard
         </Link>
         <h1 className="text-5xl mt-3">Alle trainingen</h1>
-        <p className="text-muted text-sm mt-1">{rows.length} trainingen, nieuwste bovenaan.</p>
+        <p className="text-muted text-sm mt-1">{rows.length} trainingen, nieuwste bovenaan. Veeg een training naar links om hem te verwijderen.</p>
       </div>
 
       {groups.map((g) => g.items.length > 0 && (
@@ -54,8 +55,8 @@ export default async function AllWorkoutsPage() {
           </h2>
           <div className="border-t border-ink">
             {g.items.map((w) => (
+              <SwipeToDelete key={w.id} workoutId={w.id} name={splitTitle(w.title).name} confirmFirst={w.published && !w.completed_at} className="bg-paper">
               <Link
-                key={w.id}
                 href={`/instructor/workout/${w.id}`}
                 className="flex items-center justify-between py-3 border-b border-line group"
               >
@@ -70,6 +71,7 @@ export default async function AllWorkoutsPage() {
                 </div>
                 <span aria-hidden="true" className="text-muted group-hover:text-ink transition-colors flex-shrink-0">→</span>
               </Link>
+              </SwipeToDelete>
             ))}
           </div>
         </div>
