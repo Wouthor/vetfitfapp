@@ -44,6 +44,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               return Array.from(entries).reduce(function(o, e) { o[e[0]] = e[1]; return o; }, {});
             };
           }
+          [Array.prototype, String.prototype].forEach(function(proto) {
+            if (!proto.at) {
+              proto.at = function(n) {
+                n = Math.trunc(n) || 0;
+                if (n < 0) n += this.length;
+                return n < 0 || n >= this.length ? undefined : this[n];
+              };
+            }
+          });
           if (!('queueMicrotask' in window)) {
             window.queueMicrotask = function(fn) { Promise.resolve().then(fn); };
           }
