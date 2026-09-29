@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import type { WorkoutContent, Exercise } from '@/lib/types'
 import ExerciseTimer from '@/components/ExerciseTimer'
 import { exerciseParts, type PartGroup } from '@/lib/exercise-parts'
@@ -8,6 +8,8 @@ import { exerciseParts, type PartGroup } from '@/lib/exercise-parts'
 interface WorkoutDisplayProps {
   workout: WorkoutContent
   showKneeAlternatives: boolean
+  // Getoond op het eindscherm na de laatste oefening (bijv. de sterren om te beoordelen)
+  finishSlot?: React.ReactNode
 }
 
 const sectionConfig = {
@@ -72,8 +74,10 @@ function ExerciseParts({ groups }: { groups: PartGroup[] }) {
   )
 }
 
-export default function WorkoutDisplay({ workout, showKneeAlternatives }: WorkoutDisplayProps) {
+export default function WorkoutDisplay({ workout, showKneeAlternatives, finishSlot }: WorkoutDisplayProps) {
   const [current, setCurrent] = useState(-1)
+  const rootRef = useRef<HTMLDivElement | null>(null)
+  const firstRender = useRef(true)
   const touchStartX = useRef<number | null>(null)
   const touchStartY = useRef<number | null>(null)
 
@@ -103,9 +107,22 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
   const hdCount = workout.hoofddeel?.oefeningen?.length ?? 0
   const cdCount = workout.cooling_down?.oefeningen?.length ?? 0
 
+  // current === total is het eindscherm
   function goTo(index: number) {
-    if (index >= -1 && index < total) setCurrent(index)
+    if (index >= -1 && index <= total) setCurrent(index)
   }
+
+  // Bij een nieuwe oefening terug naar de bovenkant van de training (onder de vaste menubalk)
+  useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false
+      return
+    }
+    const el = rootRef.current
+    if (!el) return
+    const top = el.getBoundingClientRect().top + window.pageYOffset - 72
+    if (window.pageYOffset > top) window.scrollTo(0, Math.max(0, top))
+  }, [current])
 
   function handleTouchStart(e: React.TouchEvent) {
     touchStartX.current = e.touches[0].clientX
@@ -117,7 +134,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
     const dx = e.changedTouches[0].clientX - touchStartX.current
     const dy = e.changedTouches[0].clientY - touchStartY.current
     if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-      if (dx < 0) goTo(current + 1)
+      if (dx < 0) { if (current < total - 1) goTo(current + 1) }
       else goTo(current - 1)
     }
     touchStartX.current = null
@@ -147,7 +164,7 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
   // ── OVERZICHT: het trainingsschema ─────────────────────────────────
   if (current === -1) {
     return (
-      <div className="space-y-3">
+      <div ref={rootRef} className="space-y-3">
         <div
           className="bg-surface border border-line rounded-sm select-none"
           onTouchStart={handleTouchStart}
@@ -208,6 +225,28 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
     )
   }
 
+  // ── EINDSCHERM ───────────────────────────────────────────────────
+  if (current >= total) {
+    return (
+      <div ref={rootRef} className="space-y-3">
+        <div className="bg-ink text-paper rounded-sm px-5 py-8 text-center">
+          <p className="font-label font-bold text-xs uppercase tracking-widest text-rose">{total} oefeningen gedaan</p>
+          <p className="font-display text-6xl uppercase leading-none mt-2">Training klaar!</p>
+          <p className="text-rose mt-3">Goed gewerkt. Vergeet niet wat te drinken.</p>
+        </div>
+        {finishSlot}
+        <div className="grid grid-cols-2 gap-2">
+          <button onClick={() => goTo(total - 1)} className="btn-secondary py-3 text-sm">
+            ← Laatste oefening
+          </button>
+          <button onClick={() => goTo(-1)} className="btn-secondary py-3 text-sm">
+            Naar schema
+          </button>
+        </div>
+      </div>
+    )
+  }
+
   // ── OEFENING ─────────────────────────────────────────────────────
   const slide = slides[current]
   const config = sectionConfig[slide.sectionKey]
@@ -216,8 +255,10 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
   // Bij apart aangeleverde onderdelen is duur_of_sets een korte opzet (bijv. "3 rondes · eigen tempo"): die tonen we ook
   const showSetsLabel = !!slide.exercise.duur_of_sets && (!parts || !!slide.exercise.onderdelen?.length)
 
+  const isLast = current === total - 1
+
   return (
-    <div className="space-y-3">
+    <div ref={rootRef} className="space-y-3">
       <div className="grid gap-1" style={{ gridTemplateColumns: `auto repeat(${sectionTabs.length}, minmax(0, 1fr))` }}>
         <button
           onClick={() => goTo(-1)}
@@ -269,6 +310,16 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
               {slide.exercise.duur_of_sets}
             </p>
           ))}
+          {/* Timer bovenaan, zodat je niet eerst hoeft te scrollen om te starten */}
+          {slide.exercise.timer && (
+            <div className="mt-4">
+              <ExerciseTimer
+                key={`${current}-timer`}
+                timer={slide.exercise.timer}
+                onComplete={() => goTo(current + 1)}
+              />
+            </div>
+          )}
           {parts && <ExerciseParts groups={parts} />}
 
           {bullets.length > 1 ? (
@@ -291,15 +342,6 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
             </div>
           )}
 
-          {slide.exercise.timer && (
-            <div className="mt-5">
-              <ExerciseTimer
-                key={`${current}-timer`}
-                timer={slide.exercise.timer}
-                onComplete={() => goTo(current + 1)}
-              />
-            </div>
-          )}
         </div>
 
         <div className="grid grid-cols-2 gap-2 px-4 pb-4">
@@ -312,10 +354,9 @@ export default function WorkoutDisplay({ workout, showKneeAlternatives }: Workou
           </button>
           <button
             onClick={() => goTo(current + 1)}
-            disabled={current === total - 1}
-            className="btn-secondary py-3 text-sm disabled:opacity-30 disabled:cursor-not-allowed"
+            className={`${isLast ? 'btn-primary' : 'btn-secondary'} py-3 text-sm`}
           >
-            Volgende →
+            {isLast ? 'Afronden →' : 'Volgende →'}
           </button>
         </div>
       </div>

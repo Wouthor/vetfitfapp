@@ -11,12 +11,31 @@ interface ExerciseTimerProps {
 type Phase = 'idle' | 'work' | 'rest' | 'done'
 
 let sharedAudioCtx: AudioContext | null = null
+let sharedOutput: AudioNode | null = null
 
 function getAudioCtx(): AudioContext {
   if (!sharedAudioCtx || sharedAudioCtx.state === 'closed') {
     sharedAudioCtx = new (window.AudioContext || (window as any).webkitAudioContext)()
+    sharedOutput = null
   }
   return sharedAudioCtx
+}
+
+// Alle geluiden gaan via een compressor: harder zonder te kraken als tonen elkaar overlappen
+function getOutput(ctx: AudioContext): AudioNode {
+  if (!sharedOutput) {
+    try {
+      const comp = ctx.createDynamicsCompressor()
+      comp.threshold.value = -12
+      comp.knee.value = 10
+      comp.ratio.value = 8
+      comp.connect(ctx.destination)
+      sharedOutput = comp
+    } catch {
+      sharedOutput = ctx.destination
+    }
+  }
+  return sharedOutput
 }
 
 // Ontgrendelt de AudioContext tijdens een user gesture en geeft Promise terug
@@ -37,58 +56,77 @@ function initAudio(): Promise<void> {
   return Promise.resolve()
 }
 
-function playTone(frequency: number, duration: number, volume = 1.0) {
+// Toon die eerst even vol blijft klinken en dan uitsterft (beter hoorbaar buiten dan een kort tikje)
+function playTone(frequency: number, duration: number, volume = 1.0, delay = 0) {
   try {
     const ctx = getAudioCtx()
+    const t = ctx.currentTime + delay
     const osc = ctx.createOscillator()
     const gain = ctx.createGain()
     osc.connect(gain)
-    gain.connect(ctx.destination)
-    osc.type = 'sine'
+    gain.connect(getOutput(ctx))
+    osc.type = 'triangle'
     osc.frequency.value = frequency
-    gain.gain.setValueAtTime(volume, ctx.currentTime)
-    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration)
-    osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + duration)
+    gain.gain.setValueAtTime(0, t)
+    gain.gain.linearRampToValueAtTime(volume, t + 0.01)
+    gain.gain.setValueAtTime(volume, t + duration * 0.6)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + duration)
+    osc.start(t)
+    osc.stop(t + duration + 0.05)
   } catch {}
 }
 
-function playBellSynth(volume = 1.0) {
+function bellStrike(ctx: AudioContext, t: number, volume: number, decay: number) {
+  const harmonics: [number, number][] = [
+    [880, 1.0],
+    [1108, 0.6],
+    [1318, 0.4],
+    [1760, 0.25],
+  ]
+  harmonics.forEach(([freq, amp]) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.connect(gain)
+    gain.connect(getOutput(ctx))
+    osc.type = 'sine'
+    osc.frequency.value = freq
+    gain.gain.setValueAtTime(0, t)
+    gain.gain.linearRampToValueAtTime(volume * amp, t + 0.01)
+    gain.gain.exponentialRampToValueAtTime(0.001, t + decay)
+    osc.start(t)
+    osc.stop(t + decay + 0.05)
+  })
+}
+
+// Eindbel: drie slagen, samen ongeveer 5 seconden
+function playBell(volume = 1.0) {
   try {
     const ctx = getAudioCtx()
-    const harmonics: [number, number][] = [
-      [880, 1.0],
-      [1108, 0.6],
-      [1318, 0.4],
-      [1760, 0.25],
-    ]
-    harmonics.forEach(([freq, amp]) => {
-      const osc = ctx.createOscillator()
-      const gain = ctx.createGain()
-      osc.connect(gain)
-      gain.connect(ctx.destination)
-      osc.type = 'sine'
-      osc.frequency.value = freq
-      gain.gain.setValueAtTime(0, ctx.currentTime)
-      gain.gain.linearRampToValueAtTime(volume * amp, ctx.currentTime + 0.01)
-      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 2.5)
-      osc.start(ctx.currentTime)
-      osc.stop(ctx.currentTime + 2.5)
-    })
+    const t = ctx.currentTime
+    bellStrike(ctx, t, volume, 3.0)
+    bellStrike(ctx, t + 0.9, volume, 3.0)
+    bellStrike(ctx, t + 1.8, volume, 3.2)
   } catch {}
 }
 
-function pingSingle() {
-  playTone(880, 0.22, 1.0)
+// Start van het werk: één lange, hoge toon
+function pingWork() {
+  playTone(1046, 0.7, 1.0)
 }
 
-function pingDouble() {
-  playTone(880, 0.22, 1.0)
-  setTimeout(() => playTone(880, 0.22, 1.0), 220)
+// Start van de rust: twee lagere tonen
+function pingRest() {
+  playTone(784, 0.45, 1.0)
+  playTone(784, 0.45, 1.0, 0.55)
+}
+
+// Aftellen 3-2-1: kort tikje
+function pingCountdown() {
+  playTone(660, 0.18, 0.8)
 }
 
 function pingEnd() {
-  playBellSynth(1.0)
+  playBell(1.0)
 }
 
 export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps) {
@@ -101,6 +139,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   const [currentRound, setCurrentRound] = useState(1)
   const [paused, setPaused] = useState(false)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const lastBeepRef = useRef('')
 
   const totalSeconds = phase === 'rest' ? restSeconds : workSeconds
   const progress = secondsLeft / totalSeconds
@@ -114,14 +153,14 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
   }, [])
 
   const startWork = useCallback((round: number) => {
-    pingSingle()
+    pingWork()
     setPhase('work')
     setCurrentRound(round)
     setSecondsLeft(workSeconds)
   }, [workSeconds])
 
   const startRest = useCallback(() => {
-    pingDouble()
+    pingRest()
     setPhase('rest')
     setSecondsLeft(restSeconds)
   }, [restSeconds])
@@ -136,6 +175,18 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
 
     return () => stopTimer()
   }, [phase, paused, stopTimer])
+
+  // Aftellen: piepje bij 3, 2 en 1 seconde (alleen als de fase lang genoeg is)
+  useEffect(() => {
+    if (paused || (phase !== 'work' && phase !== 'rest')) return
+    const phaseLength = phase === 'rest' ? restSeconds : workSeconds
+    if (phaseLength < 6 || secondsLeft < 1 || secondsLeft > 3) return
+    // Niet nog eens piepen na pauze/hervatten op dezelfde seconde
+    const key = `${phase}-${currentRound}-${secondsLeft}`
+    if (lastBeepRef.current === key) return
+    lastBeepRef.current = key
+    pingCountdown()
+  }, [secondsLeft, phase, paused, currentRound, restSeconds, workSeconds])
 
   // Transitie: reageer op secondsLeft === 0 (buiten state-updater, zodat audio werkt)
   useEffect(() => {
@@ -170,6 +221,7 @@ export default function ExerciseTimer({ timer, onComplete }: ExerciseTimerProps)
 
   function handleReset() {
     stopTimer()
+    lastBeepRef.current = ''
     setPaused(false)
     setPhase('idle')
     setCurrentRound(1)

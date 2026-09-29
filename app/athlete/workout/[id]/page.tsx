@@ -72,10 +72,17 @@ export default async function AthleteWorkoutDetailPage({ params }: { params: { i
         </div>
       )}
 
-      <WorkoutDisplay workout={w.content} showKneeAlternatives={w.knee_friendly} />
+      <WorkoutDisplay
+        workout={w.content}
+        showKneeAlternatives={w.knee_friendly}
+        finishSlot={<StarRating workoutId={w.id} initialRating={myRating?.rating ?? null} initialComment={myRating?.comment ?? null} />}
+      />
 
       <PDFExportButton workout={w.content} title={w.title ?? 'Training'} duration={w.duration} intensity={w.intensity} showKnee={w.knee_friendly} />
-      <StarRating workoutId={w.id} initialRating={myRating?.rating ?? null} initialComment={myRating?.comment ?? null} />
+      {/* Beoordelen pas na de training (of als je al een beoordeling gaf); tijdens de training via het eindscherm */}
+      {(w.completed_at || myRating) && (
+        <StarRating workoutId={w.id} initialRating={myRating?.rating ?? null} initialComment={myRating?.comment ?? null} />
+      )}
     </div>
   )
 }

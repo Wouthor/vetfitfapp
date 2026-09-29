@@ -47,13 +47,20 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
     ? Math.round((ratingList.reduce((a, r) => a + r.rating, 0) / ratingList.length) * 10) / 10
     : null
 
+  const { data: creator } = w.created_by && w.created_by !== user?.id
+    ? await supabase.from('profiles').select('name').eq('id', w.created_by).maybeSingle()
+    : { data: null }
+
   const { name } = splitTitle(w.title)
   const date = new Date(w.created_at).toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Europe/Amsterdam' })
 
   return (
     <div className="space-y-5">
       <div>
-        <div className="flex items-center justify-between">
+        <Link href="/instructor" className="font-label font-bold text-xs uppercase tracking-widest text-muted hover:text-ink">
+          ← Dashboard
+        </Link>
+        <div className="flex items-center justify-between mt-4">
           <p className="sport-label">{date ?? 'Training'}</p>
           <span className={w.completed_at ? 'badge-done' : w.published ? 'badge-live' : 'badge-draft'}>
             {w.completed_at ? 'Gedaan' : w.published ? 'Live' : 'Concept'}
@@ -66,7 +73,14 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
           <div className="py-2.5 pl-3 border-l border-line"><p className="sport-number text-3xl">{participants.length}</p><p className="sport-label">{participants.length === 1 ? 'deelnemer' : 'deelnemers'}</p></div>
         </div>
         {w.knee_friendly && <p className="sport-label text-berry mt-2">Knievriendelijk</p>}
+        {creator?.name && <p className="text-sm text-berry mt-2">Gemaakt door {creator.name}</p>}
       </div>
+
+      {!w.published && (
+        <div className="flex">
+          <PublishButton workoutId={w.id} />
+        </div>
+      )}
 
       {participants.length > 0 && (
         <div>
@@ -131,7 +145,6 @@ export default async function WorkoutDetailPage({ params }: { params: { id: stri
 
       <div className="flex space-x-3">
         <PDFExportButton workout={w.content} title={w.title ?? 'Training'} duration={w.duration} intensity={w.intensity} showKnee={true} />
-        {!w.published && <PublishButton workoutId={w.id} />}
       </div>
       <CompleteButton workoutId={w.id} completedAt={w.completed_at ?? null} />
       <DeleteWorkoutButton workoutId={w.id} />
