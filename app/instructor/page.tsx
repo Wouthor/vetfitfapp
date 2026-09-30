@@ -17,7 +17,7 @@ export default async function InstructorDashboard() {
       .from('generated_workouts')
       .select('id, title, duration, intensity, published, completed_at, created_at, created_by')
       .order('created_at', { ascending: false })
-      .limit(10),
+      .limit(7),
     supabase
       .from('training_signups')
       .select('workout_id'),
@@ -162,6 +162,10 @@ export default async function InstructorDashboard() {
               </SwipeToDelete>
             ))}
           </div>
+          <Link href="/instructor/trainingen" className="btn-secondary w-full flex items-center justify-between mt-3">
+            <span>Alle trainingen bekijken</span>
+            <span aria-hidden="true" className="text-lg leading-none">→</span>
+          </Link>
         </div>
       )}
     </div>
