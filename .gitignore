@@ -40,3 +40,4 @@ next-env.d.ts
 
 # Bewaarde foto's die de app niet gebruikt
 /foto-archief/
+.arena/
